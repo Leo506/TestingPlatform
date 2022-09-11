@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Server.Definitions.Base;
+using Server.Definitions.Database.Contexts;
 
 namespace Server.Definitions.OpenIddict;
 
@@ -11,7 +12,7 @@ public class OpenIddictDefinition : AppDefinition
             .AddCore(builder =>
             {
                 builder.UseEntityFrameworkCore()
-                    .UseDbContext<DbContext>();
+                    .UseDbContext<ApplicationDbContext>();
             })
 
             .AddServer(builder =>
@@ -21,7 +22,8 @@ public class OpenIddictDefinition : AppDefinition
                 builder.SetTokenEndpointUris("/connect/token");
 
                 builder.AddEphemeralEncryptionKey()
-                    .AddEphemeralSigningKey();
+                    .AddEphemeralSigningKey()
+                    .DisableAccessTokenEncryption();
 
                 builder.RegisterScopes("api");
 

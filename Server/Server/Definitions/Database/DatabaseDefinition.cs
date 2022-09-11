@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Server.Definitions.Base;
+using Server.Definitions.Database.Contexts;
+using Server.Models;
 
 namespace Server.Definitions.Database;
 
@@ -10,25 +12,31 @@ public class DatabaseDefinition : AppDefinition
         var dbSettings = configuration.GetSection("Database").Get<DatabaseSettings>();
         if (dbSettings.UseInMemoryDb)
         {
-            services.AddDbContext<DbContext>(builder =>
+            services.AddDbContext<ApplicationDbContext>(builder =>
             {
                 builder.UseInMemoryDatabase(nameof(DbContext));
                 builder.UseOpenIddict();
             });
-            
-            // Here will be add another db contexts
+
+            services.AddDbContext<UsersDbContext>(builder =>
+            {
+                builder.UseInMemoryDatabase(nameof(UsersDbContext));
+            });
         }
         else
         {
-            services.AddDbContext<DbContext>(builder =>
+            var connString = configuration.GetConnectionString("postgres");
+            services.AddDbContext<ApplicationDbContext>(builder =>
             {
-                var connString = configuration.GetConnectionString("postgres");
+                
                 builder.UseNpgsql(connString);
-
                 builder.UseOpenIddict();
             });
-            
-            // Here will be add another db contexts
+
+            services.AddDbContext<UsersDbContext>(builder =>
+            {
+                builder.UseNpgsql(connString);
+            });
         }
     }
 }

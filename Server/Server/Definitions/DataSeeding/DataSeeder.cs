@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
+using Server.Definitions.Database.Contexts;
 
 namespace Server.Definitions.DataSeeding;
 
@@ -13,12 +14,12 @@ public class DataSeeder : IHostedService
     {
         using var scope = _serviceProvider.CreateScope();
 
-        var context = scope.ServiceProvider.GetRequiredService<DbContext>();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await context.Database.EnsureCreatedAsync(cancellationToken);
 
         var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
 
-        if (await manager.FindByIdAsync("admin", cancellationToken) is null)
+        if (await manager.FindByClientIdAsync("admin", cancellationToken) is null)
         {
             await manager.CreateAsync(new OpenIddictApplicationDescriptor()
             {
