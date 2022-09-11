@@ -7,13 +7,6 @@ public class OpenIddictDefinition : AppDefinition
 {
     public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<DbContext>(builder =>
-        {
-            builder.UseInMemoryDatabase(nameof(DbContext));
-
-            builder.UseOpenIddict();
-        });
-
         services.AddOpenIddict()
             .AddCore(builder =>
             {
