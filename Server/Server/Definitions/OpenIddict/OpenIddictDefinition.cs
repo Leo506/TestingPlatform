@@ -17,9 +17,11 @@ public class OpenIddictDefinition : AppDefinition
 
             .AddServer(builder =>
             {
-                builder.AllowClientCredentialsFlow();
+                builder.AllowPasswordFlow();
 
                 builder.SetTokenEndpointUris("/connect/token");
+
+                builder.AcceptAnonymousClients();
 
                 builder.AddEphemeralEncryptionKey()
                     .AddEphemeralSigningKey()

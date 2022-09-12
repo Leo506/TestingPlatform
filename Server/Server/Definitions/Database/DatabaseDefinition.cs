@@ -18,10 +18,7 @@ public class DatabaseDefinition : AppDefinition
                 builder.UseOpenIddict();
             });
 
-            services.AddDbContext<UsersDbContext>(builder =>
-            {
-                builder.UseInMemoryDatabase(nameof(UsersDbContext));
-            });
+           
         }
         else
         {
@@ -33,10 +30,7 @@ public class DatabaseDefinition : AppDefinition
                 builder.UseOpenIddict();
             });
 
-            services.AddDbContext<UsersDbContext>(builder =>
-            {
-                builder.UseNpgsql(connString);
-            });
+            
         }
     }
 }

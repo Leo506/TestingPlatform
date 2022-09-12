@@ -1,32 +1,31 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Immutable;
+using System.Security.Claims;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
-using OpenIddict.Validation.AspNetCore;
-using Server.Definitions.Database.Contexts;
 using Server.Models;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Server.Controllers;
 
 public class AuthorizationController : Controller
 {
-    private readonly IOpenIddictApplicationManager _applicationManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     private readonly ILogger<AuthorizationController> _logger;
 
-    private readonly UsersDbContext _usersDbContext;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public AuthorizationController(IOpenIddictApplicationManager applicationManager,
-        ILogger<AuthorizationController> logger, UsersDbContext usersDbContext)
+    public AuthorizationController(ILogger<AuthorizationController> logger,
+        UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
     {
-        _applicationManager = applicationManager;
         _logger = logger;
-        _usersDbContext = usersDbContext;
+        _userManager = userManager;
+        _signInManager = signInManager;
     }
 
     [HttpPost("~/connect/token"), Produces("application/json")]
@@ -39,29 +38,48 @@ public class AuthorizationController : Controller
             return BadRequest();
         }
         
-        if (!request.IsClientCredentialsGrantType())
+        if (!request.IsPasswordGrantType())
             throw new NotImplementedException("The specified grant is not implemented");
 
-        var client = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
-                     throw new InvalidOperationException("The client cannot be found");
+        var user = await _userManager.FindByNameAsync(request.Username);
+        if (user is null)
+        {
+            var properties = new AuthenticationProperties(new Dictionary<string, string?>()
+            {
+                [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
+                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The username/password is invalid"
+            });
 
-        var userId = await _applicationManager.GetIdAsync(client);
-        var userRole =
-            await _usersDbContext.RoleInfos.FirstOrDefaultAsync(r =>
-                r.UserInfos.Select(u => u.UserId).Contains(userId));
+            return Forbid(properties);
+        }
+
+        var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+        if (!result.Succeeded)
+        {
+            var properties = new AuthenticationProperties(new Dictionary<string, string?>()
+            {
+                [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
+                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The username/password is invalid"
+            });
+            
+            return Forbid(properties);
+        }
 
         var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType,
-            OpenIddictConstants.Claims.Name, OpenIddictConstants.Claims.Role);
+            Claims.Name, Claims.Role);
 
-        identity.AddClaim(OpenIddictConstants.Claims.Subject, await _applicationManager.GetClientIdAsync(client),
-            OpenIddictConstants.Destinations.AccessToken, OpenIddictConstants.Destinations.IdentityToken);
-
-        identity.AddClaim(OpenIddictConstants.Claims.Name, await _applicationManager.GetDisplayNameAsync(client),
-            OpenIddictConstants.Destinations.AccessToken, OpenIddictConstants.Destinations.IdentityToken);
-
-        identity.AddClaim(OpenIddictConstants.Claims.Role, userRole?.RoleName ?? "User", OpenIddictConstants.Destinations.AccessToken,
-            OpenIddictConstants.Destinations.IdentityToken);
-
+        identity.AddClaim(Claims.Subject, await _userManager.GetUserIdAsync(user), Destinations.AccessToken,
+                Destinations.IdentityToken)
+            .AddClaim(Claims.Email, await _userManager.GetEmailAsync(user), Destinations.AccessToken,
+                Destinations.IdentityToken)
+            .AddClaim(Claims.Username, await _userManager.GetUserNameAsync(user), Destinations.AccessToken,
+                Destinations.IdentityToken);
+        
+        foreach (var role in await _userManager.GetRolesAsync(user))
+        {
+            identity.AddClaim(Claims.Role, role);
+        }
+        
         return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 }

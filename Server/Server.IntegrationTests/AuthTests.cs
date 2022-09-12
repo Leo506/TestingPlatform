@@ -15,9 +15,9 @@ public class AuthTests
 
         var messageDict = new Dictionary<string, string>()
         {
-            { "grant_type", "client_credentials" },
-            { "client_id", "admin" },
-            { "client_secret", "admin-secret" }
+            { "grant_type", "password" },
+            { "username", "admin" },
+            { "password", "12345678" }
         };
         
         var message = new HttpRequestMessage(new HttpMethod("post"), "/connect/token");
