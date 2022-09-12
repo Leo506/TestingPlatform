@@ -8,7 +8,9 @@ public class QuestionTests
     public void CreateQuestion_CorrectData_Success()
     {
         var questionText = "Question text";
-        var question = new Question(questionText, new[]
+        var question = new Question(questionText);
+        
+        question.AddAnswers(new []
         {
             new Answer()
             {
@@ -31,7 +33,9 @@ public class QuestionTests
     {
         var ex = Assert.Catch(() =>
         {
-            var question = new Question("Text", new[]
+            var question = new Question("Text");
+            
+            question.AddAnswers(new[]
             {
                 new Answer()
                 {
@@ -46,7 +50,7 @@ public class QuestionTests
             });
         });
         
-        StringAssert.Contains("Can not be more than one correct answers", ex?.Message);
+        StringAssert.Contains("Can not add second correct answer", ex?.Message);
     }
 
     [Test]
@@ -54,7 +58,8 @@ public class QuestionTests
     {
         var ex = Assert.Catch(() =>
         {
-            var question = new Question("Text", new[]
+            var question = new Question("Text");
+            question.AddAnswers(new[]
             {
                 new Answer()
                 {
@@ -68,7 +73,7 @@ public class QuestionTests
             });
         });
         
-        StringAssert.Contains("Can not be more than one same answer", ex?.Message);
+        StringAssert.Contains("Can not add two answers with the same text", ex?.Message);
     }
 
     [Test]
@@ -103,7 +108,8 @@ public class QuestionTests
 
     private Question MakeQuestion()
     {
-        return new Question("Text", new[]
+        var question = new Question("Text");
+        question.AddAnswers(new[]
         {
             new Answer()
             {
@@ -115,5 +121,7 @@ public class QuestionTests
                 Text = "Answer 2"
             }
         });
+
+        return question;
     }
 }
