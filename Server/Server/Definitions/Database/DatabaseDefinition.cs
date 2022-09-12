@@ -9,28 +9,27 @@ public class DatabaseDefinition : AppDefinition
 {
     public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
-        var dbSettings = configuration.GetSection("Database").Get<DatabaseSettings>();
-        if (dbSettings.UseInMemoryDb)
+        services.AddDbContext<ApplicationDbContext>(builder =>
         {
-            services.AddDbContext<ApplicationDbContext>(builder =>
-            {
-                builder.UseInMemoryDatabase(nameof(DbContext));
-                builder.UseOpenIddict();
-            });
+#if DEBUG
+            builder.UseInMemoryDatabase(nameof(ApplicationDbContext));
 
-           
-        }
-        else
-        {
+#else
             var connString = configuration.GetConnectionString("postgres");
-            services.AddDbContext<ApplicationDbContext>(builder =>
-            {
-                
-                builder.UseNpgsql(connString);
-                builder.UseOpenIddict();
-            });
+            builder.UseNpgsql(connString);
+#endif
+            builder.UseOpenIddict();
+        });
 
-            
-        }
+        services.AddDbContext<UsersDbContext>(builder =>
+        {
+#if DEBUG
+            builder.UseInMemoryDatabase(nameof(UsersDbContext));
+
+#else
+            var connString = configuration.GetConnectionString("postgres");
+            builder.UseNpgsql(connString);
+#endif
+        });
     }
 }

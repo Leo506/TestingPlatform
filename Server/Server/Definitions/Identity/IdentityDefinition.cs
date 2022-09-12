@@ -10,23 +10,7 @@ public class IdentityDefinition : AppDefinition
 {
     public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
-        var dbSettings = configuration.GetSection("Database").Get<DatabaseSettings>();
-        if (dbSettings.UseInMemoryDb)
-        {
-            services.AddDbContext<UsersDbContext>(builder =>
-            {
-                builder.UseInMemoryDatabase(nameof(UsersDbContext));
-            });
-        }
-        else
-        {
-            var connString = configuration.GetConnectionString("postgres");
-            services.AddDbContext<UsersDbContext>(builder =>
-            {
-                builder.UseNpgsql(connString);
-            });
-        }
-        
+
         services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
                 options.Password.RequireUppercase = false;
