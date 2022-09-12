@@ -1,15 +1,25 @@
 using Server.Definitions.Base;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace Server;
 
-// Add services to the container.
+public partial class Program
+{
 
-builder.Services.AddControllers();
-builder.Services.AddDefinitions(builder, typeof(Program));
+    public static void Main(string[] args)
+    {
 
-var app = builder.Build();
-app.UseDefinitions();
+        var builder = WebApplication.CreateBuilder(args);
 
-app.UseHttpsRedirection();
+        // Add services to the container.
 
-app.Run();
+        builder.Services.AddControllers();
+        builder.Services.AddDefinitions(builder, typeof(Program));
+
+        var app = builder.Build();
+        app.UseDefinitions();
+
+        app.UseHttpsRedirection();
+
+        app.Run();
+    }
+}
