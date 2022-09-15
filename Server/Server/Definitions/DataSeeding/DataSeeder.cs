@@ -28,6 +28,9 @@ public class DataSeeder : IHostedService
 
         if (await roleManager.FindByNameAsync("Admin") == null)
             await roleManager.CreateAsync(new ApplicationRole("Admin"));
+        
+        if (await roleManager.FindByNameAsync("User") == null)
+            await roleManager.CreateAsync(new ApplicationRole("User"));
 
         if (await userManager.FindByNameAsync(userName) == null)
         {
