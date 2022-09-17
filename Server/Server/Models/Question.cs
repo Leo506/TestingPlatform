@@ -1,4 +1,6 @@
-﻿namespace Server.Models;
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace Server.Models;
 
 public enum QuestionStatuses
 {
@@ -9,11 +11,13 @@ public enum QuestionStatuses
 
 public class Question
 {
+    [BsonIgnore]
     public int AnswersCount => _answersCollection?.Count() ?? 0;
     public string QuestionText { get; set; } = null!;
     
     public QuestionStatuses Status { get; private set; }
-
+    
+    [BsonElement]
     private readonly AnswersCollection _answersCollection = new();
 
     public Question(string questionText)

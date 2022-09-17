@@ -1,9 +1,12 @@
 ﻿using System.Collections;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Server.Models;
 
 public class AnswersCollection : IEnumerable<Answer>
 {
+    [BsonRepresentation(BsonType.Array)]
     private readonly List<Answer> _answers = new();
 
     public IEnumerator<Answer> GetEnumerator() => _answers.GetEnumerator();
