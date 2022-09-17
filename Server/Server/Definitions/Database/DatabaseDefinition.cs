@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 using Server.Definitions.Base;
 using Server.Definitions.Database.Contexts;
+using Server.Definitions.Database.Repositories;
+using Server.Definitions.Database.Settings;
 using Server.Models;
 
 namespace Server.Definitions.Database;
@@ -31,5 +34,18 @@ public class DatabaseDefinition : AppDefinition
             builder.UseNpgsql(connString);
 #endif
         });
+
+        services.AddTransient<IMongoClient>(builder =>
+            {
+                var connString = configuration.GetConnectionString("mongo");
+                return new MongoClient(connString);
+            })
+            .AddSingleton<IRepository<TestsModel>, TestsRepository>(provider =>
+            {
+                var mongoSettings = configuration.GetSection("MongoDbSettings").Get<MongoSettings>();
+                var mongoClient = provider.GetRequiredService<IMongoClient>();
+
+                return new TestsRepository(mongoClient, mongoSettings);
+            });
     }
 }
