@@ -4,5 +4,5 @@
 ## API
 + `POST` `connect/token`  
 Запрос на получение токена. Токен выдается только зарегистрированным пользователям
-+ `POST` `connect/registrate`  
++ `POST` `connect/registration`  
 Запрос на регистрицию пользователя
