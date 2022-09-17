@@ -77,7 +77,7 @@ public class AuthorizationController : Controller
         
         foreach (var role in await _userManager.GetRolesAsync(user))
         {
-            identity.AddClaim(Claims.Role, role);
+            identity.AddClaim(Claims.Role, role, Destinations.AccessToken, Destinations.IdentityToken);
         }
         
         return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
