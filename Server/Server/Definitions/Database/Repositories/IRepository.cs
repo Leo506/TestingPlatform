@@ -1,15 +1,16 @@
-﻿namespace Server.Definitions.Database.Repositories;
+﻿using Calabonga.OperationResults;
+
+namespace Server.Definitions.Database.Repositories;
 
 public interface IRepository<T>
 {
-    // TODO Add wrapper for results
-    Task<IEnumerable<T>> GetAllAsync();
+    Task<OperationResult<IEnumerable<T>>> GetAllAsync();
 
-    Task<T> GetAsync(string id);
+    Task<OperationResult<T>> GetAsync(string id);
 
-    Task CreateAsync(T item);
+    Task<OperationResult<T>> CreateAsync(T item);
 
-    Task UpdateAsync(T item);
+    Task<OperationResult<T>> UpdateAsync(T item);
 
-    Task DeleteAsync(T item);
+    Task<OperationResult<T>> DeleteAsync(T item);
 }

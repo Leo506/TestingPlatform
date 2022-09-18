@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using Calabonga.OperationResults;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Server.Definitions.Database.Settings;
 using Server.Models;
@@ -14,28 +15,90 @@ public class TestsRepository : IRepository<TestsModel>
         _collection = client.GetDatabase(settings.Database).GetCollection<TestsModel>(settings.Collection);
     }
 
-    public async Task<IEnumerable<TestsModel>> GetAllAsync()
+    public async Task<OperationResult<IEnumerable<TestsModel>>> GetAllAsync()
     {
-        return await _collection.Find(new BsonDocument()).ToListAsync();
+        var result = OperationResult.CreateResult<IEnumerable<TestsModel>>();
+
+        try
+        {
+            result.Result = await _collection.Find(new BsonDocument()).ToListAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e); // TODO Add logger
+            result.AddError(e);
+        }
+
+        return result;
     }
 
-    public Task<TestsModel> GetAsync(string id)
+    public async Task<OperationResult<TestsModel>> GetAsync(string id)
     {
-        return Task.FromResult(_collection.AsQueryable().FirstOrDefault(x => x.Id == id));
+        var result = OperationResult.CreateResult<TestsModel>();
+        try
+        {
+            result.Result = await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            result.AddError(e);
+        }
+
+        return result;
     }
 
-    public async Task CreateAsync(TestsModel item)
+    public async Task<OperationResult<TestsModel>> CreateAsync(TestsModel item)
     {
-        await _collection.InsertOneAsync(item);
+        var result = OperationResult.CreateResult<TestsModel>();
+
+        try
+        {
+            await _collection.InsertOneAsync(item);
+            result.Result = item;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            result.AddError(e);
+        }
+
+        return result;
     }
 
-    public async Task UpdateAsync(TestsModel item)
+    public async Task<OperationResult<TestsModel>> UpdateAsync(TestsModel item)
     {
-        await _collection.ReplaceOneAsync(x => x.Id == item.Id, item);
+        var result = OperationResult.CreateResult<TestsModel>();
+
+        try
+        {
+            await _collection.ReplaceOneAsync(x => x.Id == item.Id, item);
+            result.Result = item;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            result.AddError(e);
+        }
+
+        return result;
     }
 
-    public async Task DeleteAsync(TestsModel item)
+    public async Task<OperationResult<TestsModel>> DeleteAsync(TestsModel item)
     {
-        await _collection.DeleteOneAsync(x => x.Id == item.Id);
+        var result = OperationResult.CreateResult<TestsModel>();
+
+        try
+        {
+            await _collection.DeleteOneAsync(x => x.Id == item.Id);
+            result.Result = item;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            result.AddError(e);
+        }
+
+        return result;
     }
 }

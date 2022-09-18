@@ -21,9 +21,13 @@ public class TestsManipulationController : Controller
     
     
     [HttpGet("/get/tests/all")]
-    public async Task GetAllTests()
+    public async Task<IActionResult> GetAllTests()
     {
-        await HttpContext.Response.WriteAsJsonAsync(await _repository.GetAllAsync());
+        var result = await _repository.GetAllAsync();
+        if (!result.Ok)
+            return BadRequest();
+
+        return Ok(result.Result);
     }
 
 
