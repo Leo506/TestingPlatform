@@ -12,5 +12,5 @@ public interface IRepository<T>
 
     Task<OperationResult<T>> UpdateAsync(T item);
 
-    Task<OperationResult<T>> DeleteAsync(T item);
+    Task<OperationResult<string>> DeleteAsync(string id);
 }

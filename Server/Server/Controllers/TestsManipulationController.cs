@@ -32,6 +32,17 @@ public class TestsManipulationController : Controller
     }
 
 
+    [HttpGet("/get/tests/{id}")]
+    public async Task<IActionResult> GetTest(string id)
+    {
+        var result = await _repository.GetAsync(id);
+        if (!result.Ok)
+            return BadRequest();
+
+        return Ok(result.Result);
+    }
+
+
     [HttpPost("/create/test")]
     public async Task<IActionResult> CreateTest([FromBody]TestViewModel viewModel)
     {
@@ -42,5 +53,24 @@ public class TestsManipulationController : Controller
         await _repository.CreateAsync(testModel);
 
         return Ok();
+    }
+
+    [HttpPut("/update/test/{id}")]
+    public async Task<IActionResult> UpdateTest(string id, [FromBody] TestViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest();
+
+        var testModel = viewModel.ToTestModel();
+        testModel.Id = id;
+        var result = await _repository.UpdateAsync(testModel);
+        return result.Ok ? Ok() : this.StatusCode(ServerConstants.ServerResponses.ServiceNotAvailable);
+    }
+
+    [HttpDelete("/delete/test/{id}")]
+    public async Task<IActionResult> DeleteTest(string id)
+    {
+        var result = await _repository.DeleteAsync(id);
+        return result.Ok ? Ok() : this.StatusCode(ServerConstants.ServerResponses.ServiceNotAvailable);
     }
 }

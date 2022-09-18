@@ -84,14 +84,14 @@ public class TestsRepository : IRepository<TestsModel>
         return result;
     }
 
-    public async Task<OperationResult<TestsModel>> DeleteAsync(TestsModel item)
+    public async Task<OperationResult<string>> DeleteAsync(string id)
     {
-        var result = OperationResult.CreateResult<TestsModel>();
+        var result = OperationResult.CreateResult<string>();
 
         try
         {
-            await _collection.DeleteOneAsync(x => x.Id == item.Id);
-            result.Result = item;
+            await _collection.DeleteOneAsync(x => x.Id == id);
+            result.Result = id;
         }
         catch (Exception e)
         {
