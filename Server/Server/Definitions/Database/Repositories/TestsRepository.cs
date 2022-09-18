@@ -19,22 +19,22 @@ public class TestsRepository : IRepository<TestsModel>
         return await _collection.Find(new BsonDocument()).ToListAsync();
     }
 
-    public Task<TestsModel> Get(string id)
+    public Task<TestsModel> GetAsync(string id)
     {
         return Task.FromResult(_collection.AsQueryable().FirstOrDefault(x => x.Id == id));
     }
 
-    public async Task Create(TestsModel item)
+    public async Task CreateAsync(TestsModel item)
     {
         await _collection.InsertOneAsync(item);
     }
 
-    public async Task Update(TestsModel item)
+    public async Task UpdateAsync(TestsModel item)
     {
         await _collection.ReplaceOneAsync(x => x.Id == item.Id, item);
     }
 
-    public async Task Delete(TestsModel item)
+    public async Task DeleteAsync(TestsModel item)
     {
         await _collection.DeleteOneAsync(x => x.Id == item.Id);
     }

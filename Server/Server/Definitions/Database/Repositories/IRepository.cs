@@ -5,11 +5,11 @@ public interface IRepository<T>
     // TODO Add wrapper for results
     Task<IEnumerable<T>> GetAllAsync();
 
-    Task<T> Get(string id);
+    Task<T> GetAsync(string id);
 
-    Task Create(T item);
+    Task CreateAsync(T item);
 
-    Task Update(T item);
+    Task UpdateAsync(T item);
 
-    Task Delete(T item);
+    Task DeleteAsync(T item);
 }

@@ -9,5 +9,5 @@ public class TestsModel
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; } = null!;
     
-    public IEnumerable<Question> Questions = new List<Question>();
+    public List<Question> Questions = new List<Question>();
 }
