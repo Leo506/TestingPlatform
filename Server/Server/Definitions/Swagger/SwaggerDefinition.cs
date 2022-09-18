@@ -1,4 +1,5 @@
-﻿using Server.Definitions.Base;
+﻿using Microsoft.OpenApi.Models;
+using Server.Definitions.Base;
 
 namespace Server.Definitions.Swagger;
 
@@ -7,7 +8,47 @@ public class SwaggerDefinition : AppDefinition
     public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        
+        // TODO learn more about swagger and OAuth2.0
+        services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo()
+            {
+                Title = "Demo API",
+                Version = "v1"
+            });
+            
+            options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows
+                {
+                    Password = new OpenApiOAuthFlow
+                    {
+                        // TODO remove hard core value
+                        TokenUrl = new Uri($"https://localhost:7168/connect/token", UriKind.Absolute)
+                    }
+                }
+            });
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "oauth2"
+                        },
+                        Scheme = "oauth2",
+                        Name = "Bearer",
+                        In = ParameterLocation.Header,
+
+                    },
+                    new List<string>()
+                }
+            });
+        });
     }
 
     public override void ConfigureApplication(WebApplication app, IWebHostEnvironment env)
