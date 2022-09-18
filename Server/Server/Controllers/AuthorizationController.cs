@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using Server.Data;
 using Server.Models;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
@@ -47,7 +48,8 @@ public class AuthorizationController : Controller
             var properties = new AuthenticationProperties(new Dictionary<string, string?>()
             {
                 [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The username/password is invalid"
+                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                    ServerConstants.ExceptionTexts.AuthFailed
             });
 
             return Forbid(properties);
@@ -59,7 +61,8 @@ public class AuthorizationController : Controller
             var properties = new AuthenticationProperties(new Dictionary<string, string?>()
             {
                 [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The username/password is invalid"
+                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                    ServerConstants.ExceptionTexts.AuthFailed
             });
             
             return Forbid(properties);

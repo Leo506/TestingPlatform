@@ -17,7 +17,8 @@ public class SwaggerDefinition : AppDefinition
                 Title = "Demo API",
                 Version = "v1"
             });
-            
+
+            var authUrl = configuration.GetSection("AuthServer").Value;
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.OAuth2,
@@ -25,8 +26,7 @@ public class SwaggerDefinition : AppDefinition
                 {
                     Password = new OpenApiOAuthFlow
                     {
-                        // TODO remove hard core value
-                        TokenUrl = new Uri($"https://localhost:7168/connect/token", UriKind.Absolute)
+                        TokenUrl = new Uri($"{authUrl}/connect/token", UriKind.Absolute)
                     }
                 }
             });

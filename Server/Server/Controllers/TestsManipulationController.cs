@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Validation;
 using OpenIddict.Validation.AspNetCore;
+using Server.Data;
 using Server.Definitions.Database.Repositories;
 using Server.Models;
 using Server.ViewModels;
@@ -9,7 +10,7 @@ using Server.ViewModels;
 namespace Server.Controllers;
 
 [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme,
-    Roles = "Admin, User")]
+    Roles = ServerConstants.Roles.Admin + ", " + ServerConstants.Roles.User)]
 public class TestsManipulationController : Controller
 {
     private readonly IRepository<TestsModel> _repository;

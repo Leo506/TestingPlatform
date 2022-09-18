@@ -1,9 +1,6 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using OpenIddict.Abstractions;
-using OpenIddict.Server.AspNetCore;
+using Server.Data;
 using Server.Models;
 using Server.ViewModels;
 
@@ -26,7 +23,7 @@ public class RegistrationController : Controller
 
         var existUser = await _userManager.FindByNameAsync(viewModel.UserName);
         if (existUser != null)
-            return BadRequest("There is user with same username");
+            return BadRequest(ServerConstants.ExceptionTexts.UserAlreadyExist);
 
         var newUser = new ApplicationUser()
         {
@@ -36,15 +33,16 @@ public class RegistrationController : Controller
 
         var addingResult = await _userManager.CreateAsync(newUser, viewModel.Password);
         if (!addingResult.Succeeded)
-            return StatusCode(503, "Service is not available");  // TODO remove magic values
-        
-        var addingRoleResult = await _userManager.AddToRoleAsync(newUser, "User");
-        if (!addingRoleResult.Succeeded)
         {
-            await _userManager.DeleteAsync(newUser);
-            return StatusCode(503, "Service is not available"); // TODO remove magic values
+            return this.StatusCode(ServerConstants.ServerResponses.ServiceNotAvailable);
         }
+        
+        var addingRoleResult = await _userManager.AddToRoleAsync(newUser, ServerConstants.Roles.User);
+        
+        if (addingRoleResult.Succeeded) return Ok();
+        
+        await _userManager.DeleteAsync(newUser);
+        return this.StatusCode(ServerConstants.ServerResponses.ServiceNotAvailable);
 
-        return Ok();
     }
 }
