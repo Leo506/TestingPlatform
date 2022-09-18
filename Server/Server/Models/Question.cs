@@ -12,13 +12,12 @@ public enum QuestionStatuses
 public class Question
 {
     [BsonIgnore]
-    public int AnswersCount => _answersCollection?.Count() ?? 0;
+    public int AnswersCount => AnswersCollection?.Count() ?? 0;
     public string QuestionText { get; set; } = null!;
     
     public QuestionStatuses Status { get; private set; }
     
-    [BsonElement]
-    private readonly AnswersCollection _answersCollection = new();
+    public AnswersCollection AnswersCollection { get; set; } = new();
 
     public Question(string questionText)
     {
@@ -30,7 +29,7 @@ public class Question
 
     public void SelectAnswer(string answerText)
     {
-        var answer = _answersCollection.FirstOrDefault(a => a.Text == answerText);
+        var answer = AnswersCollection.FirstOrDefault(a => a.Text == answerText);
 
         if (answer is null)
             throw new InvalidOperationException($"There is no answer with this text: {answerText}");
@@ -38,5 +37,5 @@ public class Question
         Status = answer.IsCorrect ? QuestionStatuses.Correct : QuestionStatuses.Failed;
     }
 
-    public void AddAnswers(params Answer[] answers) => _answersCollection.Add(answers);
+    public void AddAnswers(params Answer[] answers) => AnswersCollection.Add(answers);
 }
