@@ -19,8 +19,8 @@ public class TestsManipulationController : Controller
     [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme,
         Roles = "Admin")]
     [HttpGet("/get/tests/all")]
-    public async Task<IEnumerable<TestsModel>> GetAllTests()
+    public async Task GetAllTests()
     {
-        return await _repository.GetAllAsync();
+        await HttpContext.Response.WriteAsJsonAsync(await _repository.GetAllAsync());
     }
 }
