@@ -36,13 +36,13 @@ public class RegistrationController : Controller
 
         var addingResult = await _userManager.CreateAsync(newUser, viewModel.Password);
         if (!addingResult.Succeeded)
-            return BadRequest("error while  adding new user"); // TODO find alternative
+            return StatusCode(503, "Service is not available");  // TODO remove magic values
         
         var addingRoleResult = await _userManager.AddToRoleAsync(newUser, "User");
         if (!addingRoleResult.Succeeded)
         {
             await _userManager.DeleteAsync(newUser);
-            return BadRequest("error while adding role to user"); // TODO find alternative
+            return StatusCode(503, "Service is not available"); // TODO remove magic values
         }
 
         return Ok();
