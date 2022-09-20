@@ -39,8 +39,17 @@ public class AuthorizationController : Controller
             return BadRequest();
         }
         
-        if (!request.IsPasswordGrantType())
+        if (!request.IsPasswordGrantType() && !request.IsRefreshTokenGrantType())
             throw new NotImplementedException("The specified grant is not implemented");
+
+        if (request.IsRefreshTokenGrantType())
+        {
+            var claimsPrincipal =
+                (await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme))
+                .Principal;
+
+            return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        }
 
         var user = await _userManager.FindByNameAsync(request.Username);
         if (user is null)
@@ -82,7 +91,9 @@ public class AuthorizationController : Controller
         {
             identity.AddClaim(Claims.Role, role, Destinations.AccessToken, Destinations.IdentityToken);
         }
-        
-        return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+
+        var principal = new ClaimsPrincipal(identity);
+        principal.SetScopes(Scopes.OfflineAccess);
+        return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 }

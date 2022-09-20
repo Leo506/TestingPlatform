@@ -18,6 +18,7 @@ public class OpenIddictDefinition : AppDefinition
             .AddServer(builder =>
             {
                 builder.AllowPasswordFlow();
+                builder.AllowRefreshTokenFlow();
 
                 builder.SetTokenEndpointUris("/connect/token");
 
