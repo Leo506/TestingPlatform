@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Client.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace Client.Pages;
 
 public class LoginModel : ComponentBase
 {
+    [Inject] public AuthService AuthService { get; set; }
     public LoginViewModel LoginData { get; set; }
 
     public LoginModel()
@@ -12,9 +14,9 @@ public class LoginModel : ComponentBase
         LoginData = new LoginViewModel();
     }
 
-    protected Task LoginAsync()
+    protected async Task LoginAsync()
     {
-        return Task.CompletedTask;
+        await AuthService.AuthenticateAsync(LoginData.UserName, LoginData.Password);
     }
 }
 
