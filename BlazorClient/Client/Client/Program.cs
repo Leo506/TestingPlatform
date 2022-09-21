@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Client;
+using Client.LocalStorage;
 using Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -15,7 +16,8 @@ builder.Services.AddScoped<AuthenticationStateProvider, TokenAuthProvider>();
 
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-builder.Services.AddSingleton<AuthService>();
+builder.Services.AddScoped<AuthService>();
 builder.Services.AddHttpClient<AuthService>(client => client.BaseAddress = new Uri("https://localhost:7168"));
+builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
 
 await builder.Build().RunAsync();

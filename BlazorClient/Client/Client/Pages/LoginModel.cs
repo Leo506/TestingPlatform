@@ -7,6 +7,7 @@ namespace Client.Pages;
 public class LoginModel : ComponentBase
 {
     [Inject] public AuthService AuthService { get; set; }
+    [Inject] public NavigationManager NavigationManager { get; set; }
     public LoginViewModel LoginData { get; set; }
 
     public LoginModel()
@@ -16,7 +17,10 @@ public class LoginModel : ComponentBase
 
     protected async Task LoginAsync()
     {
-        await AuthService.AuthenticateAsync(LoginData.UserName, LoginData.Password);
+        var result = await AuthService.AuthenticateAsync(LoginData.UserName, LoginData.Password);
+        
+        if (result)
+            NavigationManager.NavigateTo("/", true);
     }
 }
 

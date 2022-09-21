@@ -11,13 +11,7 @@ public class TokenModel
     public string RefreshToken { get; set; }
 
     [JsonPropertyName("expires_in")]
-    public int LifeTime { get; set; }
-    
-    [JsonIgnore]
-    public DateTime ReleasedAt { get; set; }
-
-    [JsonIgnore]
-    public DateTime ExpiredAt => ReleasedAt.AddSeconds(LifeTime);
+    public int ExpiresIn { get; set; }
     
     [JsonPropertyName("token_type")]
     public string TokenType { get; set; }
