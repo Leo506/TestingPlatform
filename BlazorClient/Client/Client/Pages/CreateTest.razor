@@ -1,8 +1,10 @@
 ﻿@page "/CreateTest"
 @using Client.Models
 @using Client.Services
+@using Microsoft.AspNetCore.Authorization
 @inject TestsService TestsService
 @inject NavigationManager NavigationManager
+@attribute [Authorize]
 <h3>CreateTest</h3>
 
 

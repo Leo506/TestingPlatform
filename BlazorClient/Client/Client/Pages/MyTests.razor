@@ -1,7 +1,9 @@
 ﻿@page "/mytests"
 @using Client.Services
 @using Client.Models
+@using Microsoft.AspNetCore.Authorization
 @inject TestsService TestsService
+@attribute [Authorize]
 <h3>MyTests</h3>
 
 @if (TestsModels != null)
