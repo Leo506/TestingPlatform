@@ -1,0 +1,38 @@
+﻿@using Client.Models
+
+<div class="container">
+    <div class="col">
+        
+        <div class="row-cols-sm-1">
+            <label class="form-label">Question text</label>
+            <InputText @bind-Value="Question.QuestionText"/>
+        </div>
+
+        <div class="col">
+            <h4>Answers</h4>
+            @foreach (var answer in Question.AnswersCollection)
+            {
+                <div class="row-cols-sm-1">
+                    <AnswerComponent Answer = "answer"/>
+                </div>
+            }
+        </div>
+
+        <div class="row-cols-sm-1">
+            <button class="btn-primary" @onclick="AddAnswer">Add Answer</button>
+        </div>
+
+    </div>
+
+    </div>
+
+@code {
+    [Parameter]
+    public Question Question { get; set; }
+
+    private void AddAnswer()
+    {
+        Question.AddAnswers(new Answer());
+    }
+
+}

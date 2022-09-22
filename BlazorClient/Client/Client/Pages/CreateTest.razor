@@ -1,0 +1,20 @@
+﻿@page "/CreateTest"
+@using Client.Models
+<h3>CreateTest</h3>
+
+
+<CascadingValue Value="_testsModel">
+    <EditForm Model="_testsModel">
+        <TestComponent/>
+    </EditForm>
+</CascadingValue>
+
+@code {
+    private TestsModel _testsModel { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _testsModel = new TestsModel();
+    }
+
+}

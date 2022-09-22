@@ -1,0 +1,21 @@
+﻿@using Client.Models
+
+<div class="row">
+    <div class="col-sm-auto">
+        <InputText @bind-Value="Answer.Text"/>
+    </div>
+    
+    <div class="col-sm-auto">
+        <InputRadioGroup @bind-Value="Answer.IsCorrect">
+            <InputRadio Value="true"/>Is Correct
+            <InputRadio Value="false"/>Not correct
+        </InputRadioGroup>
+    </div>
+</div>
+    
+
+
+@code {
+    [Parameter]
+    public Answer Answer { get; set; }
+}
