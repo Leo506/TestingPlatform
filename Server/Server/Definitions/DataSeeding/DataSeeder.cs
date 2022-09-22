@@ -22,9 +22,11 @@ public class DataSeeder : IHostedService
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
         
-        var email = "admin@admin.com";
+        var adminEmail = "admin@admin.com";
         var password = "12345678";
-        var userName = "admin";
+        var adminUserName = "admin";
+        var userName = "user";
+        var userEmail = "user@user.com";
 
         if (await roleManager.FindByNameAsync("Admin") == null)
             await roleManager.CreateAsync(new ApplicationRole("Admin"));
@@ -32,15 +34,26 @@ public class DataSeeder : IHostedService
         if (await roleManager.FindByNameAsync("User") == null)
             await roleManager.CreateAsync(new ApplicationRole("User"));
 
+        if (await userManager.FindByNameAsync(adminUserName) == null)
+        {
+            var user = new ApplicationUser()
+            {
+                Email = adminEmail,
+                UserName = adminUserName
+            };
+            await userManager.CreateAsync(user, password);
+            await userManager.AddToRoleAsync(user, "Admin");
+        }
+        
         if (await userManager.FindByNameAsync(userName) == null)
         {
             var user = new ApplicationUser()
             {
-                Email = email,
+                Email = userEmail,
                 UserName = userName
             };
             await userManager.CreateAsync(user, password);
-            await userManager.AddToRoleAsync(user, "Admin");
+            await userManager.AddToRoleAsync(user, "User");
         }
     }
 

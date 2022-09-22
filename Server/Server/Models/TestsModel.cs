@@ -10,5 +10,8 @@ public class TestsModel
     [BsonIgnoreIfNull]
     public string Id { get; set; }
     
+    [BsonIgnoreIfNull]
+    public string UserId { get; set; }
+    
     public List<Question> Questions { get; set; } = new();
 }

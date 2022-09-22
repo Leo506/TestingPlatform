@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Calabonga.OperationResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OpenIddict.Abstractions;
 using OpenIddict.Validation;
 using OpenIddict.Validation.AspNetCore;
 using Server.Data;
@@ -24,7 +26,16 @@ public class TestsManipulationController : Controller
     [HttpGet("/get/tests/all")]
     public async Task<IActionResult> GetAllTests()
     {
-        var result = await _repository.GetAllAsync();
+        var result = new OperationResult<IEnumerable<TestsModel>>();
+        
+        if (HttpContext.User.IsInRole(ServerConstants.Roles.Admin))
+            result = await _repository.GetAllAsync();
+        else
+        {
+            var userId =
+                HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == OpenIddictConstants.Claims.Subject);
+            result = await _repository.GetAllAsync(userId?.Value);
+        }
         if (!result.Ok)
             return BadRequest();
 
@@ -52,6 +63,8 @@ public class TestsManipulationController : Controller
             return BadRequest();
 
         var testModel = viewModel.ToTestModel();
+        var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == OpenIddictConstants.Claims.Subject);
+        testModel.UserId = userId.Value;
         await _repository.CreateAsync(testModel);
 
         return Ok();

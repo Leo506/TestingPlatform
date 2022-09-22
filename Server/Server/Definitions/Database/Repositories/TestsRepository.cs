@@ -32,6 +32,23 @@ public class TestsRepository : IRepository<TestsModel>
         return result;
     }
 
+    public async Task<OperationResult<IEnumerable<TestsModel>>> GetAllAsync(string userId)
+    {
+        var result = OperationResult.CreateResult<IEnumerable<TestsModel>>();
+
+        try
+        {
+            result.Result = await _collection.Find(doc => doc.UserId == userId).ToListAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e); // TODO Add logger
+            result.AddError(e);
+        }
+
+        return result;
+    }
+
     public async Task<OperationResult<TestsModel>> GetAsync(string id)
     {
         var result = OperationResult.CreateResult<TestsModel>();

@@ -6,6 +6,8 @@ public interface IRepository<T>
 {
     Task<OperationResult<IEnumerable<T>>> GetAllAsync();
 
+    Task<OperationResult<IEnumerable<T>>> GetAllAsync(string userId);
+
     Task<OperationResult<T>> GetAsync(string id);
 
     Task<OperationResult<T>> CreateAsync(T item);
