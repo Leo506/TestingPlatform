@@ -1,6 +1,6 @@
-﻿using Server.Models;
+﻿using Client.Models;
 
-namespace Server.ViewModels;
+namespace Client.ViewModels;
 
 public static class TestViewModelExtension
 {

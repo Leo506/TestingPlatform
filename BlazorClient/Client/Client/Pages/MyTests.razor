@@ -1,0 +1,34 @@
+﻿@page "/mytests"
+@using Client.Services
+@using Client.Models
+@inject TestsService TestsService
+<h3>MyTests</h3>
+
+@if (TestsModels != null)
+{
+    @foreach (var test in TestsModels)
+    {
+        @foreach (var q in test.Questions)
+        {
+            <h5>@q.QuestionText</h5>
+            <ul>
+                @foreach (var answer in q.AnswersCollection)
+                {
+                    <li>@answer.Text</li>
+                }
+            </ul>
+        }
+    }
+}
+
+@code {
+
+    private IEnumerable<TestsModel>? TestsModels { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        TestsModels = await TestsService.GetAllTests();
+    }
+
+}
+

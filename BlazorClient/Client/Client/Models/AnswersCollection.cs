@@ -1,8 +1,6 @@
 ﻿using System.Collections;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 
-namespace Server.Models;
+namespace Client.Models;
 
 public class AnswersCollection : IEnumerable<Answer>
 {

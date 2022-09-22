@@ -28,7 +28,9 @@ public class TestsManipulationController : Controller
         if (!result.Ok)
             return BadRequest();
 
-        return Ok(result.Result);
+        var toReturn = result.Result.Select(x => x.ToTestViewModel());
+
+        return Ok(toReturn);
     }
 
 
