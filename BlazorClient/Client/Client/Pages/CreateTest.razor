@@ -1,20 +1,32 @@
 ﻿@page "/CreateTest"
 @using Client.Models
+@using Client.Services
+@inject TestsService TestsService
+@inject NavigationManager NavigationManager
 <h3>CreateTest</h3>
 
 
-<CascadingValue Value="_testsModel">
-    <EditForm Model="_testsModel">
+<CascadingValue Value="TestsModel">
+    <EditForm Model="TestsModel">
         <TestComponent/>
     </EditForm>
 </CascadingValue>
 
+<button class="btn-primary" @onclick="SaveTest">Save test</button>
+
 @code {
-    private TestsModel _testsModel { get; set; }
+    private TestsModel TestsModel { get; set; }
 
     protected override void OnInitialized()
     {
-        _testsModel = new TestsModel();
+        TestsModel = new TestsModel();
+    }
+
+    protected async Task SaveTest()
+    {
+        var result = await TestsService.CreateTest(TestsModel);
+        if (result)
+            NavigationManager.NavigateTo("/CreateTest", true);
     }
 
 }
