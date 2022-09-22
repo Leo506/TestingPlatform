@@ -22,8 +22,6 @@ public static class TestViewModelExtension
             test.Questions.Add(question);
         }
 
-        test.Id = viewModel.Id;
-
         return test;
     }
 

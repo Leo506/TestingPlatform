@@ -7,7 +7,8 @@ public class TestsModel
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; } = null!;
+    [BsonIgnoreIfNull]
+    public string Id { get; set; }
     
     public List<Question> Questions { get; set; } = new();
 }
