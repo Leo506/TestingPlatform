@@ -8,16 +8,19 @@
 {
     @foreach (var test in TestsModels)
     {
-        @foreach (var q in test.Questions)
-        {
-            <h5>@q.QuestionText</h5>
-            <ul>
-                @foreach (var answer in q.AnswersCollection)
-                {
-                    <li>@answer.Text</li>
-                }
-            </ul>
-        }
+        <details class="form-control">
+            <summary>Test id @test.Id</summary>
+            @foreach (var q in test.Questions)
+            {
+                <h5>@q.QuestionText</h5>
+                <ul>
+                    @foreach (var answer in q.AnswersCollection)
+                    {
+                        <li>@answer.Text</li>
+                    }
+                </ul>
+            }
+        </details>
     }
 }
 

@@ -22,6 +22,8 @@ public static class TestViewModelExtension
             test.Questions.Add(question);
         }
 
+        test.Id = viewModel.Id;
+
         return test;
     }
 
@@ -57,6 +59,7 @@ public static class TestViewModelExtension
 
         return new TestViewModel()
         {
+            Id = model.Id,
             Answers = answerArray,
             QuestionTexts = questionTexts.ToArray(),
             CorrectAnswersIndex = correctIndexes.ToArray()
