@@ -1,4 +1,16 @@
-﻿@inherits LayoutComponentBase
+﻿@using Client.LocalStorage
+@using Client.Models
+@inherits LayoutComponentBase
+@inject ILocalStorageService LocalStorageService
+@inject NavigationManager NavigationManager
+
+@code {
+    private async Task LogOut()
+    {
+        await LocalStorageService.RemoveAsync(nameof(TokenModel));
+        NavigationManager.NavigateTo("/", true);
+    }
+}
 
 <div class="page">
     <div class="sidebar">
@@ -6,9 +18,13 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+        <AuthorizeView>
+            <Authorized>
+                <div class="top-row px-4">
+                    <button class="btn-light" @onclick="LogOut">Log out</button>
+                </div>
+            </Authorized>
+        </AuthorizeView>
 
         <article class="content px-4">
             @Body
