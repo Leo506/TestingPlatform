@@ -78,6 +78,8 @@ public class TestsManipulationController : Controller
 
         var testModel = viewModel.ToTestModel();
         testModel.Id = id;
+        var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == OpenIddictConstants.Claims.Subject);
+        testModel.UserId = userId.Value;
         var result = await _repository.UpdateAsync(testModel);
         return result.Ok ? Ok() : this.StatusCode(ServerConstants.ServerResponses.ServiceNotAvailable);
     }
