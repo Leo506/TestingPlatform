@@ -14,14 +14,13 @@
             <summary>Test id @test.Id</summary>
             @foreach (var q in test.Questions)
             {
-                <h5>@q.QuestionText</h5>
-                <ul>
-                    @foreach (var answer in q.AnswersCollection)
-                    {
-                        <li>@answer.Text</li>
-                    }
-                </ul>
+                <EditForm Model="test">
+                    <CascadingValue Value="test">
+                        <TestComponent/>
+                    </CascadingValue>
+                </EditForm>
             }
+            <button class="btn-primary">Update test</button>
         </details>
     }
 }
@@ -34,6 +33,8 @@
     {
         TestsModels = await TestsService.GetAllTests();
     }
+
+    
 
 }
 

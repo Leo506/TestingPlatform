@@ -2,16 +2,18 @@
 <h3>Test</h3>
 
 <h4>Questions</h4>
-@foreach (var question in Test.Questions)
+@if (Test != null)
 {
-    <QuestionComponent Question="question"/>
+    @foreach (var question in Test.Questions)
+    {
+        <QuestionComponent Question="question"/>
+    }
 }
-
 <button class="btn-primary" @onclick="AddQuestion">Add Question</button>
 
 @code {
     [CascadingParameter]
-    public TestsModel Test { get; set; }
+    public TestsModel? Test { get; set; }
 
     private void AddQuestion()
     {
