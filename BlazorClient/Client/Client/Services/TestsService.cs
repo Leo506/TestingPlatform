@@ -57,4 +57,25 @@ public class TestsService
         Console.WriteLine($"Create test status code: {response.StatusCode}");
         return false;
     }
+
+    public async Task<bool> UpdateTest(TestsModel model)
+    {
+        var message = new HttpRequestMessage(HttpMethod.Put, $"update/test/{model.Id}");
+        var tokenModel = await _localStorage.GetAsync<TokenModel>(nameof(TokenModel));
+        message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel?.AccessToken);
+
+        var viewModel = model.ToTestViewModel();
+        viewModel.Id = "";
+        
+        message.Content = new StringContent(JsonSerializer.Serialize(viewModel));
+        message.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+        
+
+        var response = await _httpClient.SendAsync(message);
+
+        if (response.IsSuccessStatusCode)
+            return true;
+
+        return false;
+    }
 }

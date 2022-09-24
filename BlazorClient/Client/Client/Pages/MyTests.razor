@@ -3,6 +3,7 @@
 @using Client.Models
 @using Microsoft.AspNetCore.Authorization
 @inject TestsService TestsService
+@inject NavigationManager NavigationManager
 @attribute [Authorize]
 <h3>MyTests</h3>
 
@@ -12,15 +13,12 @@
     {
         <details class="form-control">
             <summary>Test id @test.Id</summary>
-            @foreach (var q in test.Questions)
-            {
-                <EditForm Model="test">
-                    <CascadingValue Value="test">
-                        <TestComponent/>
-                    </CascadingValue>
-                </EditForm>
-            }
-            <button class="btn-primary">Update test</button>
+            <EditForm Model="test">
+                <CascadingValue Value="test">
+                    <TestComponent/>
+                </CascadingValue>
+            </EditForm>
+            <button class="btn-primary mt-1" @onclick="() => UpdateTest(test)">Update test</button>
         </details>
     }
 }
@@ -34,7 +32,14 @@
         TestsModels = await TestsService.GetAllTests();
     }
 
-    
+
+    private async Task UpdateTest(TestsModel model)
+    {
+        var result = await TestsService.UpdateTest(model);
+        
+        if (result)
+            NavigationManager.NavigateTo("/mytests", true);
+    }
 
 }
 
