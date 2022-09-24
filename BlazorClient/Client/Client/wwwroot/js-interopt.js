@@ -9,3 +9,7 @@ function get(key) {
 function remove(key) {
     return  localStorage.removeItem(key);
 }
+
+function ConfirmAction(message) {
+    return confirm(message);
+}
