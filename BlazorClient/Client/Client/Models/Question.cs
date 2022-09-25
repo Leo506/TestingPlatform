@@ -1,5 +1,6 @@
 ﻿
 using System.Text.Json.Serialization;
+using Client.Attributes;
 
 namespace Client.Models;
 
@@ -22,6 +23,7 @@ public class Question
     public QuestionStatuses Status { get; private set; }
     
     [JsonPropertyName("answersCollection")]
+    [UniqueAnswers]
     public AnswersCollection AnswersCollection { get; set; } = new();
 
     public Question(string questionText)

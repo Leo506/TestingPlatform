@@ -6,7 +6,11 @@
 {
     @foreach (var question in Test.Questions)
     {
-        <QuestionComponent Question="question"/>
+        <EditForm Model="@question">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+            <QuestionComponent Question="question"/>
+        </EditForm>
     }
 }
 <button class="btn-primary m-1" @onclick="AddQuestion">Add Question</button>
