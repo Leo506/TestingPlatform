@@ -45,7 +45,9 @@
         var result = await TestsService.UpdateTest(model);
         
         if (result)
-            NavigationManager.NavigateTo("/mytests", true);
+        {
+            await OnInitializedAsync();
+        }
     }
 
     private async Task DeleteTest(TestsModel test)
@@ -59,7 +61,9 @@
         var result = await TestsService.DeleteTest(test.Id);
         
         if (result)
-            NavigationManager.NavigateTo("/mytests", true);
+        {
+            await OnInitializedAsync();
+        }
     }
 
 }
