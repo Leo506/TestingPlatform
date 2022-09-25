@@ -73,9 +73,18 @@ public class TestsService
 
         var response = await _httpClient.SendAsync(message);
 
-        if (response.IsSuccessStatusCode)
-            return true;
+        return response.IsSuccessStatusCode;
+    }
 
-        return false;
+
+    public async Task<bool> DeleteTest(string id)
+    {
+        var message = new HttpRequestMessage(HttpMethod.Delete, $"delete/test/{id}");
+        var tokenModel = await _localStorage.GetAsync<TokenModel>(nameof(TokenModel));
+        message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel?.AccessToken);
+        
+        var response = await _httpClient.SendAsync(message);
+
+        return response.IsSuccessStatusCode;
     }
 }
