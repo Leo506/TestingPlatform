@@ -20,6 +20,9 @@
       <Compile Update="Pages\LoginModel.cs">
         <DependentUpon>Login.razor</DependentUpon>
       </Compile>
+      <Compile Update="Pages\RegistrationModel.cs">
+        <DependentUpon>RegistrationPage.razor</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

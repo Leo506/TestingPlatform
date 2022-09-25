@@ -16,7 +16,7 @@ public class RegistrationController : Controller
     }
 
     [HttpPost("/connect/registration"), Produces("application/json")]
-    public async Task<IActionResult> Register(UserViewModel viewModel)
+    public async Task<IActionResult> Register([FromBody]UserViewModel viewModel)
     {
         if (!ModelState.IsValid)
             return BadRequest();

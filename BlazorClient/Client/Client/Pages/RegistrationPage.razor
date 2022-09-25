@@ -1,0 +1,26 @@
+﻿@page "/RegistrationPage"
+@inherits RegistrationModel
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h1>Registration</h1>
+        
+        <EditForm Model="@RegistrationData" OnValidSubmit="RegisterAsync">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+            
+            <label for="email">Email</label>
+            <InputText id="email" @bind-Value="RegistrationData.Email" class="form-control"/>
+            
+            <label for="username">Username</label>
+            <InputText id="username" @bind-Value="RegistrationData.UserName" class="form-control"/>
+            
+            <label for="password">Password</label>
+            <InputText id="password" type="password" @bind-Value="RegistrationData.Password" class="form-control"/>
+            
+            <p class="my-4">
+                <button type="submit" class="btn btn-primary">Register</button>
+            </p>
+        </EditForm>
+    </div>
+</div>
