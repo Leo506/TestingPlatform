@@ -24,6 +24,7 @@ public class Question
     
     [JsonPropertyName("answersCollection")]
     [UniqueAnswers]
+    [CorrectAnswersCount(1)]
     public AnswersCollection AnswersCollection { get; set; } = new();
 
     public Question(string questionText)
