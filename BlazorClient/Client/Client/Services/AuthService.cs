@@ -54,30 +54,4 @@ public class AuthService
 
         return false;
     }
-
-    private UserModel ExportUserData(string accessToken)
-    {
-        var handler = new JwtSecurityTokenHandler();
-        var jwt = handler.ReadJwtToken(accessToken);
-
-        return new UserModel()
-        {
-            UseName = jwt.Claims.FirstOrDefault(claim => claim.Type == "username")?.Value ?? string.Empty,
-            Roles = jwt.Claims.Where(claim => claim.Type == "role").Select(claim => claim.Value).ToArray()
-        };
-    }
-
-    public ClaimsPrincipal ExportClaimsPrincipal(string accessToken)
-    {
-        var handler = new JwtSecurityTokenHandler();
-        var jwt = handler.ReadJwtToken(accessToken);
-
-        var identity = new ClaimsIdentity(jwt.Claims, "Token");
-        //identity.AddClaims(jwt.Claims);
-        foreach (var jwtClaim in jwt.Claims)
-        {
-            Console.WriteLine(jwtClaim.Value);
-        }
-        return new ClaimsPrincipal(identity);
-    }
 }

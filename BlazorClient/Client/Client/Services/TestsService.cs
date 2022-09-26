@@ -8,15 +8,18 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Client.Services;
 
-public class TestsService
+public class TestsService : IDisposable
 {
     private readonly HttpClient _httpClient;
     private readonly ILocalStorageService _localStorage;
+    private readonly InterceptorService _interceptorService;
     
-    public TestsService(HttpClient httpClient, ILocalStorageService localStorage)
+    public TestsService(HttpClient httpClient, ILocalStorageService localStorage, InterceptorService interceptorService)
     {
         _httpClient = httpClient;
         _localStorage = localStorage;
+        _interceptorService = interceptorService;
+        _interceptorService.RegisterEvent();
     }
 
     public async Task<IEnumerable<TestsModel>?> GetAllTests()
@@ -86,5 +89,10 @@ public class TestsService
         var response = await _httpClient.SendAsync(message);
 
         return response.IsSuccessStatusCode;
+    }
+
+    public void Dispose()
+    {
+        _interceptorService.DisposeEvent();
     }
 }

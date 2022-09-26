@@ -5,6 +5,7 @@ using Client.LocalStorage;
 using Client.Pages;
 using Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -18,9 +19,16 @@ builder.Services.AddScoped<AuthenticationStateProvider, TokenAuthProvider>();
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddHttpClient<RefreshTokenService>(client => client.BaseAddress = new Uri("https://localhost:7168"));
 builder.Services.AddHttpClient<AuthService>(client => client.BaseAddress = new Uri("https://localhost:7168"));
-builder.Services.AddHttpClient<TestsService>(client => client.BaseAddress = new Uri("https://localhost:7168"));
+builder.Services.AddHttpClient<TestsService>((provider, client) =>
+{
+    client.BaseAddress = new Uri("https://localhost:7168");
+    client.EnableIntercept(provider);
+});
 builder.Services.AddHttpClient<RegistrationService>(client => client.BaseAddress = new Uri("https://localhost:7168"));
 builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
+builder.Services.AddHttpClientInterceptor();
+builder.Services.AddScoped<InterceptorService>();
 
 await builder.Build().RunAsync();
