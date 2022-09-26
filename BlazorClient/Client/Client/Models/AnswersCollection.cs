@@ -24,4 +24,6 @@ public class AnswersCollection : IEnumerable<Answer>
     }
 
     public Answer this[int index] => _answers[index];
+
+    public void RemoveLast() => _answers.RemoveAt(_answers.Count - 1);
 }

@@ -20,6 +20,10 @@
 
         <div class="row-cols-sm-1">
             <button class="btn-primary m-1" @onclick="AddAnswer">Add Answer</button>
+            @if (Question.AnswersCollection.Any())
+            {
+                <button class="btn-danger m-1" @onclick="RemoveAnswer">Remove Answer</button>
+            }
         </div>
 
     </div>
@@ -33,6 +37,11 @@
     private void AddAnswer()
     {
         Question.AddAnswers(new Answer());
+    }
+
+    private void RemoveAnswer()
+    {
+        Question.AnswersCollection.RemoveLast();
     }
 
 }
