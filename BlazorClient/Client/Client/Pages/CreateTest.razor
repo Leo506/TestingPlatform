@@ -26,6 +26,9 @@
 
     protected async Task SaveTest()
     {
+        if (!TestsModel.IsValid())
+            return;
+        
         var result = await TestsService.CreateTest(TestsModel);
         if (result)
             NavigationManager.NavigateTo("/CreateTest", true);
