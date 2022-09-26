@@ -3,7 +3,7 @@ services:
   postgres:
     image: postgres:13.3
     environment:
-      POSTGRES_DB: "AuthInfo"
+      POSTGRES_DB: "TestingPlatform"
       POSTGRES_USER: "admin"
       POSTGRES_PASSWORD: "password"
     ports:
