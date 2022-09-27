@@ -1,0 +1,44 @@
+﻿version: "3.9"
+services:
+  postgres:
+    image: postgres:13.3
+    container_name: postgres
+    environment:
+      POSTGRES_DB: "TestingPlatform"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "password"
+    ports:
+      - "5432:5432"
+
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    expose:
+      - 27017
+    ports:
+      - 27017:27017
+    restart: always
+
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
+
+  server:
+    build: .
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - C:\Users\790ma\.aspnet\https:/https
+    depends_on:
+      - postgres
+      - mongo
+
