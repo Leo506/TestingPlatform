@@ -19,6 +19,7 @@ public class DatabaseDefinition : AppDefinition
 
 #else
             var connString = configuration.GetConnectionString("postgres");
+            Console.WriteLine(connString);
             builder.UseNpgsql(connString);
 #endif
             builder.UseOpenIddict();
@@ -31,6 +32,7 @@ public class DatabaseDefinition : AppDefinition
 
 #else
             var connString = configuration.GetConnectionString("postgres");
+            Console.WriteLine(connString);
             builder.UseNpgsql(connString);
 #endif
         });

@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Configurations>Debug;Release;PreRelease</Configurations>
         <Platforms>AnyCPU</Platforms>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
