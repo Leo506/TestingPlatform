@@ -6,6 +6,7 @@ ENV ASPNETCORE_URLS="http://*:80;https://*:443"
 ENV ASPNETCORE_HTTPS_PORT=443
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password="password"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/https/aspnetapp.pfx"
+ENV ASPNETCORE_ENVIRONMENT="Release"
 
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
