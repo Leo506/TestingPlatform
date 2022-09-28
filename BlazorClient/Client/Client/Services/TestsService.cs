@@ -91,6 +91,22 @@ public class TestsService : IDisposable
         return response.IsSuccessStatusCode;
     }
 
+    public async Task<TestsModel?> Get(string id)
+    {
+        var message = new HttpRequestMessage(HttpMethod.Get, $"get/tests/{id}");
+        var tokenModel = await _localStorage.GetAsync<TokenModel>(nameof(TokenModel));
+        message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel?.AccessToken);
+
+        var response = await _httpClient.SendAsync(message);
+
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        var viewModel = await response.Content.ReadFromJsonAsync<TestViewModel>();
+
+        return viewModel?.ToTestModel();
+    }
+
     public void Dispose()
     {
         _interceptorService.DisposeEvent();

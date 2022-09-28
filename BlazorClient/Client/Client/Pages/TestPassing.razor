@@ -1,0 +1,64 @@
+﻿@page "/TestPassing"
+@using Client.Models
+@using Client.Services
+@inject TestsService TestsService
+<h3>TestPassing</h3>
+
+<EditForm Model="TestId">
+    <div class="row">
+        <div class="col-sm">
+            <InputText class="form-control-sm" @bind-Value="TestId"/>
+            <button class="btn-primary" @onclick="GetTest">Choose test</button>
+        </div>
+    </div>
+</EditForm>
+
+@if (TestsModel != null)
+{
+    <EditForm Model="TestsModel">
+        @foreach(var q in TestsModel.Questions)
+        {
+            <PassQuestion QuestionModel="q"/>
+        }
+    </EditForm>
+}
+
+@if (Result == null && TestsModel != null)
+{
+    <button class="btn-primary" @onclick="PassTest"> Pass </button>
+}
+else if (Result != null)
+{
+    <ResultComponent Result="Result"/>
+}
+
+@code {
+    private TestsModel? TestsModel { get; set; }
+    private string? TestId { get; set; }
+    private ResultModel? Result { get; set; }
+
+    protected override void OnInitialized()
+    {
+        TestId = string.Empty;
+        Result = null;
+    }
+
+    private async Task GetTest()
+    {
+        if (TestId != null) TestsModel = await TestsService.Get(TestId);
+    }
+
+    private void PassTest()
+    {
+        Result = new ResultModel()
+        {
+            QuestionCount = TestsModel.Questions.Count,
+            CorrectAnswersCount = TestsModel.Questions.Count(question => question.IsChooseCorrectAnswer),
+            ReturnUrl = "/TestPassing"
+        };
+
+        TestsModel = null;
+        
+        // TODO send result to server
+    }
+}

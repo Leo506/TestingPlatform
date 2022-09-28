@@ -5,12 +5,12 @@
         
         <div class="row-cols-sm-1">
             <label class="form-label">Question text</label>
-            <InputText @bind-Value="Question.QuestionText"/>
+            <InputText @bind-Value="QuestionModel.QuestionText"/>
         </div>
 
         <div class="col">
             <h4>Answers</h4>
-            @foreach (var answer in Question.AnswersCollection)
+            @foreach (var answer in QuestionModel.AnswersCollection)
             {
                 <div class="row-cols-sm-1">
                     <AnswerComponent Answer = "answer"/>
@@ -20,7 +20,7 @@
 
         <div class="row-cols-sm-1">
             <button class="btn-primary m-1" @onclick="AddAnswer">Add Answer</button>
-            @if (Question.AnswersCollection.Any())
+            @if (QuestionModel.AnswersCollection.Any())
             {
                 <button class="btn-danger m-1" @onclick="RemoveAnswer">Remove Answer</button>
             }
@@ -32,16 +32,16 @@
 
 @code {
     [Parameter]
-    public Question Question { get; set; }
+    public Question QuestionModel { get; set; }
 
     private void AddAnswer()
     {
-        Question.AddAnswers(new Answer());
+        QuestionModel.AddAnswers(new Answer());
     }
 
     private void RemoveAnswer()
     {
-        Question.AnswersCollection.RemoveLast();
+        QuestionModel.AnswersCollection.RemoveLast();
     }
 
 }

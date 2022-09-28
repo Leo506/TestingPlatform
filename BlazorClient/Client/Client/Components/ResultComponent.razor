@@ -1,0 +1,17 @@
+﻿@using Client.Models
+@inject NavigationManager NavigationManager
+
+<h4>Your result</h4>
+<p>@Result.CorrectAnswersCount / @Result.QuestionCount</p>
+
+<button class="btn-primary" @onclick="Reload">OK</button>
+
+@code {
+    [Parameter]
+    public ResultModel Result { get; set; }
+
+    private void Reload()
+    {
+        NavigationManager.NavigateTo(Result.ReturnUrl ?? "/", true);
+    }
+}

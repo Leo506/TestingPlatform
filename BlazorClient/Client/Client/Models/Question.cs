@@ -26,6 +26,8 @@ public class Question
     [UniqueAnswers]
     [CorrectAnswersCount(1)]
     public AnswersCollection AnswersCollection { get; set; } = new();
+    
+    public bool IsChooseCorrectAnswer { get; set; }
 
     public Question(string questionText)
     {

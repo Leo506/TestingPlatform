@@ -1,0 +1,23 @@
+﻿@using Client.Models
+
+<div class="container">
+    <h4>@QuestionModel.QuestionText</h4>
+    
+    <div class="row">
+        <InputRadioGroup @bind-Value="@QuestionModel.IsChooseCorrectAnswer">
+            @foreach (var answer in QuestionModel.AnswersCollection)
+            {
+                <div class="row">
+                    <div class="col-auto">
+                        <InputRadio Value="@answer.IsCorrect"/>@answer.Text
+                    </div>
+                </div>
+            }
+        </InputRadioGroup>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Question QuestionModel { get; set; }
+}
