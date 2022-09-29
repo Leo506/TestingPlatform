@@ -37,20 +37,9 @@ public class RefreshTokenServiceTests
             ExpiresIn = 60
         });
 
-        var handler = new Mock<HttpMessageHandler>();
-        handler.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonSerializer.Serialize(new TokenModel()))
-            });
+        var client = HttpClientHelper.GetClient(new TokenModel());
 
-        var sut = new RefreshTokenService(localStorage, new HttpClient(handler.Object)
-        {
-            BaseAddress = new Uri("https://test")
-        });
+        var sut = new RefreshTokenService(localStorage, client);
 
         // act
         var result = await sut.RefreshTokenAsync();
@@ -64,20 +53,10 @@ public class RefreshTokenServiceTests
     {
         // arrange
         var localStorage = LocalStorageHelper.GetService(new TokenModel());
-        
-        var handler = new Mock<HttpMessageHandler>();
-        handler.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage()
-            {
-                StatusCode = HttpStatusCode.BadRequest
-            });
 
-        var sut = new RefreshTokenService(localStorage, new HttpClient(handler.Object)
-        {
-            BaseAddress = new Uri("https://test")
-        });
+        var client = HttpClientHelper.GetBadClient();
+
+        var sut = new RefreshTokenService(localStorage, client);
         
         // act
         var result = await sut.RefreshTokenAsync();
@@ -96,10 +75,7 @@ public class RefreshTokenServiceTests
             ExpiresIn = 180
         });
 
-        var sut = new RefreshTokenService(localStorage, new HttpClient()
-        {
-            BaseAddress = new Uri("https://test")
-        });
+        var sut = new RefreshTokenService(localStorage, HttpClientHelper.GetSimpleClient());
 
         // act
         var result = await sut.RefreshTokenAsync();
