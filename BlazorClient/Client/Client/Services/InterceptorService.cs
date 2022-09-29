@@ -1,19 +1,20 @@
 ﻿using System.Net.Http.Headers;
 using Client.LocalStorage;
 using Client.Models;
+using Client.Services.Interfaces;
 using Toolbelt.Blazor;
 
 namespace Client.Services;
 
 public class InterceptorService
 {
-    private readonly HttpClientInterceptor _interceptor;
+    private readonly IHttpClientInterceptor _interceptor;
 
-    private readonly RefreshTokenService _refreshTokenService;
+    private readonly IRefreshTokenService _refreshTokenService;
 
     private readonly ILocalStorageService _localStorageService;
 
-    public InterceptorService(HttpClientInterceptor interceptor, RefreshTokenService refreshTokenService,
+    public InterceptorService(IHttpClientInterceptor interceptor, IRefreshTokenService refreshTokenService,
         ILocalStorageService localStorageService)
     {
         _interceptor = interceptor;
@@ -25,7 +26,7 @@ public class InterceptorService
 
     private async Task InterceptorOnBeforeSendAsync(object sender, HttpClientInterceptorEventArgs e)
     {
-        var refresh = await _refreshTokenService.RefreshToken();
+        var refresh = await _refreshTokenService.RefreshTokenAsync();
         
         if (!refresh)
             return;

@@ -1,13 +1,14 @@
 ﻿using System.Net.Http.Json;
 using Client.LocalStorage;
 using Client.Models;
+using Client.Services.Interfaces;
 
 namespace Client.Services;
 
-public class RefreshTokenService
+public class RefreshTokenService : IRefreshTokenService
 {
-    private ILocalStorageService _localStorageService;
-    private HttpClient _httpClient;
+    private readonly ILocalStorageService _localStorageService;
+    private readonly HttpClient _httpClient;
     
     public RefreshTokenService(ILocalStorageService localStorageService, HttpClient httpClient)
     {
@@ -15,7 +16,7 @@ public class RefreshTokenService
         _httpClient = httpClient;
     }
 
-    public async Task<bool> RefreshToken()
+    public async Task<bool> RefreshTokenAsync()
     {
         var tokenModel = await _localStorageService.GetAsync<TokenModel>(nameof(TokenModel));
 
