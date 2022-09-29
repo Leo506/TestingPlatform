@@ -71,6 +71,7 @@ public class TestsRepository : IRepository<TestsModel>
 
         try
         {
+            item.Id = string.Empty;
             await _collection.InsertOneAsync(item);
             result.Result = item;
         }
