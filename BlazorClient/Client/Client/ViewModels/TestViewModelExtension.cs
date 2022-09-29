@@ -6,63 +6,56 @@ public static class TestViewModelExtension
 {
     public static TestsModel ToTestModel(this TestViewModel viewModel)
     {
-        var test = new TestsModel();
+        var questionList = new List<Question>();
 
         for (var i = 0; i < viewModel.QuestionTexts.Length; i++)
         {
             var question = new Question(viewModel.QuestionTexts[i]);
             for (var j = 0; j < viewModel.Answers[i].Length; j++)
             {
-                question.AddAnswers(new Answer()
+                question.AnswersCollection.Add(new Answer()
                 {
                     Text = viewModel.Answers[i][j],
                     IsCorrect = j == viewModel.CorrectAnswersIndex[i]
                 });
             }
-            test.Questions.Add(question);
+            questionList.Add(question);
         }
 
-        test.Id = viewModel.Id;
-
-        return test;
+        return new TestsModel()
+        {
+            Id = viewModel.Id,
+            Questions = questionList
+        };
     }
 
     public static TestViewModel ToTestViewModel(this TestsModel model)
     {
 
         var questionTexts = new List<string>();
-        var answers = new List<List<string>>();
-        var correctIndexes = new List<int>();
+        var answersList = new List<List<string>>();
+        var correctAnswersIndexes = new List<int>();
         
         foreach (var question in model.Questions)
         {
             questionTexts.Add(question.QuestionText);
 
             var tmp = new List<string>();
-
-            for (int i = 0; i < question.AnswersCount; i++)
+            for (int i = 0; i < question.AnswersCollection.Count(); i++)
             {
-                var a = question.AnswersCollection[i];
-                if (a.IsCorrect)
-                    correctIndexes.Add(i);
-                tmp.Add(a.Text);
+                tmp.Add(question.AnswersCollection[i].Text);
+                if (question.AnswersCollection[i].IsCorrect)
+                    correctAnswersIndexes.Add(i);
             }
-            
-            answers.Add(tmp);
-        }
-
-        var answerArray = new string[answers.Count][];
-        for (var i = 0; i < answerArray.Length; i++)
-        {
-            answerArray[i] = answers[i].ToArray();
+            answersList.Add(tmp);
         }
 
         return new TestViewModel()
         {
             Id = model.Id,
-            Answers = answerArray,
-            QuestionTexts = questionTexts.ToArray(),
-            CorrectAnswersIndex = correctIndexes.ToArray()
+            Answers = answersList.Select(x => x.ToArray()).ToArray(),
+            CorrectAnswersIndex = correctAnswersIndexes.ToArray(),
+            QuestionTexts = questionTexts.ToArray()
         };
     }
 }
