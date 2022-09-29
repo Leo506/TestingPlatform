@@ -14,9 +14,6 @@ public class AnswersCollection : IEnumerable<Answer>
 
     public void Add(Answer answer)
     {
-        if (!CheckCorrectAnswersCount(answer))
-            throw new ArgumentException("Can not add second correct answer");
-
         if (!CheckForUniqAnswerText(answer))
             throw new InvalidOperationException("Can not add two answers with the same text");
         
@@ -30,19 +27,11 @@ public class AnswersCollection : IEnumerable<Answer>
             Add(answer);
         }
     }
-
-    private bool CheckCorrectAnswersCount(Answer answer)
-    {
-        var correctAnswersCount = _answers.Count(a => a.IsCorrect);
-        correctAnswersCount += answer.IsCorrect ? 1 : 0;
-
-        return correctAnswersCount <= 1;
-    }
+    
+    public Answer this[int index] => _answers[index];
 
     private bool CheckForUniqAnswerText(Answer answer)
     {
         return !_answers.Select(a => a.Text).Contains(answer.Text);
     }
-
-    public Answer this[int index] => _answers[index];
 }
