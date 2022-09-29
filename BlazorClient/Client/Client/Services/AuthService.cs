@@ -42,6 +42,8 @@ public class AuthService
                 return false;
             
             Console.WriteLine(tokenModel.AccessToken);
+            
+            tokenModel.Issued = DateTime.UtcNow;
 
             await _localStorage.SetAsync(nameof(TokenModel), tokenModel);
 

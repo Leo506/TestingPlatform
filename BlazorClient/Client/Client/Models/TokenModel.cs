@@ -18,4 +18,7 @@ public class TokenModel
     
     [JsonPropertyName("scope")]
     public string Scope { get; set; }
+    
+    [JsonIgnore]
+    public DateTime Issued { get; set; }
 }
