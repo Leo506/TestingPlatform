@@ -2,6 +2,7 @@ using System.Net;
 using Client.LocalStorage;
 using Client.Models;
 using Client.Services;
+using Client.UnitTests.Helpers;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
@@ -33,11 +34,11 @@ public class AuthServiceTests
     {
         // arrange
         const string expected = "grant_type=password&username=username&password=password";
-        var localStorage = new Mock<ILocalStorageService>();
+        var localStorage = LocalStorageHelper.GetService();
         var handler = new MockHttpHandler();
         var httpClient = new HttpClient(handler);
         httpClient.BaseAddress = new Uri("https://localhost:5000");
-        var sut = new AuthService(httpClient, localStorage.Object);
+        var sut = new AuthService(httpClient, localStorage);
 
         // act
         await sut.AuthenticateAsync("username", "password");

@@ -1,6 +1,7 @@
 ﻿using Client.LocalStorage;
 using Client.Services;
 using Client.Services.Interfaces;
+using Client.UnitTests.Helpers;
 using Moq;
 using Toolbelt.Blazor;
 
@@ -20,11 +21,11 @@ public class InterceptorServiceTests
             wasInvoke = true;
             return Task.FromResult(false);
         });
-        var localStorage = new Mock<ILocalStorageService>();
-        var sut = new InterceptorService(mockInterceptor, refreshTokenMock.Object, localStorage.Object);
+        var localStorage = LocalStorageHelper.GetService();
+        var sut = new InterceptorService(mockInterceptor, refreshTokenMock.Object, localStorage);
 
         // act
-        sut.RegisterEvent();
+        sut.RegisterOnEvents();
         
         mockInterceptor.InvokeBeforeSendAsync();
 

@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using Client.LocalStorage;
 using Client.Models;
+using Client.Services.Interfaces;
 using Client.ViewModels;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -12,23 +13,27 @@ public class TestsService : IDisposable
 {
     private readonly HttpClient _httpClient;
     private readonly ILocalStorageService _localStorage;
-    private readonly InterceptorService _interceptorService;
+    private readonly IInterceptorService _interceptorService;
     
-    public TestsService(HttpClient httpClient, ILocalStorageService localStorage, InterceptorService interceptorService)
+    public TestsService(HttpClient httpClient, ILocalStorageService localStorage, IInterceptorService interceptorService)
     {
         _httpClient = httpClient;
         _localStorage = localStorage;
         _interceptorService = interceptorService;
-        _interceptorService.RegisterEvent();
+        _interceptorService.RegisterOnEvents();
     }
 
     public async Task<IEnumerable<TestsModel>?> GetAllTests()
     {
         var message = new HttpRequestMessage(HttpMethod.Get, "get/tests/all");
         var tokenModel = await _localStorage.GetAsync<TokenModel>(nameof(TokenModel));
+        if (tokenModel is null)
+            return new List<TestsModel>();
         message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel?.AccessToken);
 
         var response = await _httpClient.SendAsync(message);
+        if (!response.IsSuccessStatusCode)
+            return new List<TestsModel>();
         
         Console.WriteLine(await response.Content.ReadAsStringAsync());
 
@@ -109,6 +114,6 @@ public class TestsService : IDisposable
 
     public void Dispose()
     {
-        _interceptorService.DisposeEvent();
+        _interceptorService.Dispose();
     }
 }

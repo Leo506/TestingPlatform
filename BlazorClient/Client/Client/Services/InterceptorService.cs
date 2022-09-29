@@ -6,7 +6,7 @@ using Toolbelt.Blazor;
 
 namespace Client.Services;
 
-public class InterceptorService
+public class InterceptorService : IInterceptorService
 {
     private readonly IHttpClientInterceptor _interceptor;
 
@@ -22,9 +22,22 @@ public class InterceptorService
         _localStorageService = localStorageService;
     }
 
-    public void RegisterEvent() => _interceptor.BeforeSendAsync += InterceptorOnBeforeSendAsync;
+    public void Dispose()
+    {
+        _interceptor.BeforeSendAsync -= OnBeforeSendAsync;
+    }
 
-    private async Task InterceptorOnBeforeSendAsync(object sender, HttpClientInterceptorEventArgs e)
+    public void RegisterOnEvents()
+    {
+        _interceptor.BeforeSendAsync += OnBeforeSendAsync;
+    }
+
+    public Task OnBeforeSend(object sender, HttpClientInterceptorEventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task OnBeforeSendAsync(object sender, HttpClientInterceptorEventArgs e)
     {
         var refresh = await _refreshTokenService.RefreshTokenAsync();
         
@@ -35,5 +48,13 @@ public class InterceptorService
         e.Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token?.AccessToken);
     }
 
-    public void DisposeEvent() => _interceptor.BeforeSendAsync -= InterceptorOnBeforeSendAsync;
+    public Task OnAfterSend(object sender, HttpClientInterceptorEventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task OnAfterSendAsync(object sender, HttpClientInterceptorEventArgs e)
+    {
+        throw new NotImplementedException();
+    }
 }
