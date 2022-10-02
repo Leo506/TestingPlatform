@@ -93,6 +93,8 @@ public class TestsService : IDisposable
     {
         var message = new HttpRequestMessage(HttpMethod.Delete, $"delete/test/{id}");
         var tokenModel = await _localStorage.GetAsync<TokenModel>(nameof(TokenModel));
+        if (tokenModel is null)
+            return false;
         message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel?.AccessToken);
         
         var response = await _httpClient.SendAsync(message);

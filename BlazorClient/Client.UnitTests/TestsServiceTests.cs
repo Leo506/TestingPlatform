@@ -188,6 +188,59 @@ public class TestsServiceTests
     }
 
     #endregion
-    
-    
+
+    #region DeleteTest
+
+    [Fact]
+    public async Task DeleteTest_No_TokenModel_Returns_False()
+    {
+        // arrange
+        var interceptorService = new Mock<IInterceptorService>();
+        var sut = new TestsService(HttpClientHelper.GetSimpleClient(), LocalStorageHelper.GetService(),
+            interceptorService.Object);
+
+        // act
+        var result = await sut.DeleteTest("");
+
+        // assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task DeleteTest_Bad_Response_Returns_False()
+    {
+        // arrange
+        var interceptorService = new Mock<IInterceptorService>();
+        var sut = new TestsService(HttpClientHelper.GetBadClient(), LocalStorageHelper.GetService(new TokenModel()
+            {
+                AccessToken = "1111"
+            }),
+            interceptorService.Object);
+
+        // act
+        var result = await sut.DeleteTest("");
+
+        // assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task DeleteTest_All_Good_Returns_True()
+    {
+        // arrange
+        var interceptorService = new Mock<IInterceptorService>();
+        var sut = new TestsService(HttpClientHelper.GetClient(""), LocalStorageHelper.GetService(new TokenModel()
+            {
+                AccessToken = "1111"
+            }),
+            interceptorService.Object);
+
+        // act
+        var result = await sut.DeleteTest("");
+
+        // assert
+        Assert.True(result);
+    }
+
+    #endregion
 }
