@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Calabonga.OperationResults;
 using Client.LocalStorage;
 using Client.Models;
 using Client.Services.Interfaces;
@@ -25,18 +26,14 @@ public class TestsService : IDisposable
 
     public async Task<IEnumerable<TestsModel>?> GetAllTests()
     {
-        var message = new HttpRequestMessage(HttpMethod.Get, "get/tests/all");
-        var tokenModel = await _localStorage.GetAsync<TokenModel>(nameof(TokenModel));
-        if (tokenModel is null)
+        var messageResult = await CreateMessage(HttpMethod.Get, "get/tests/all");
+        if (!messageResult.Ok)
             return new List<TestsModel>();
-        message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel?.AccessToken);
 
-        var response = await _httpClient.SendAsync(message);
+        var response = await _httpClient.SendAsync(messageResult.Result!);
         if (!response.IsSuccessStatusCode)
             return new List<TestsModel>();
         
-        Console.WriteLine(await response.Content.ReadAsStringAsync());
-
         var viewModels = await response.Content.ReadFromJsonAsync<TestViewModel[]>();
 
         var models = viewModels?.Select(x => x.ToTestModel());
@@ -46,44 +43,27 @@ public class TestsService : IDisposable
 
     public async Task<bool> CreateTest(TestsModel model)
     {
-        var message = new HttpRequestMessage(HttpMethod.Post, "create/test");
-        var tokenModel = await _localStorage.GetAsync<TokenModel>(nameof(TokenModel));
-        if (tokenModel is null)
-            return false;
-        message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel?.AccessToken);
-
         var viewModel = model.ToTestViewModel();
         viewModel.Id = "";
-        
-        message.Content = new StringContent(JsonSerializer.Serialize(viewModel));
-        message.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
-        
+        var messageResult = await CreateMessage<TestViewModel>(HttpMethod.Post, "create/test", viewModel);
+        if (!messageResult.Ok)
+            return false;
 
-        var response = await _httpClient.SendAsync(message);
+        var response = await _httpClient.SendAsync(messageResult.Result!);
 
-        if (response.IsSuccessStatusCode)
-            return true;
-        
-        Console.WriteLine($"Create test status code: {response.StatusCode}");
-        return false;
+        return response.IsSuccessStatusCode;
     }
 
     public async Task<bool> UpdateTest(TestsModel model)
     {
-        var message = new HttpRequestMessage(HttpMethod.Put, $"update/test/{model.Id}");
-        var tokenModel = await _localStorage.GetAsync<TokenModel>(nameof(TokenModel));
-        if (tokenModel is null)
-            return false;
-        message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel?.AccessToken);
-
         var viewModel = model.ToTestViewModel();
         viewModel.Id = "";
-        
-        message.Content = new StringContent(JsonSerializer.Serialize(viewModel));
-        message.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
-        
 
-        var response = await _httpClient.SendAsync(message);
+        var messageResult = await CreateMessage<TestViewModel>(HttpMethod.Post, $"update/test/{model.Id}", viewModel);
+        if (!messageResult.Ok)
+            return false;
+
+        var response = await _httpClient.SendAsync(messageResult.Result!);
 
         return response.IsSuccessStatusCode;
     }
@@ -91,26 +71,22 @@ public class TestsService : IDisposable
 
     public async Task<bool> DeleteTest(string id)
     {
-        var message = new HttpRequestMessage(HttpMethod.Delete, $"delete/test/{id}");
-        var tokenModel = await _localStorage.GetAsync<TokenModel>(nameof(TokenModel));
-        if (tokenModel is null)
+        var messageResult = await CreateMessage(HttpMethod.Delete, $"delete/test/{id}");
+        if (!messageResult.Ok)
             return false;
-        message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel?.AccessToken);
-        
-        var response = await _httpClient.SendAsync(message);
+
+        var response = await _httpClient.SendAsync(messageResult.Result!);
 
         return response.IsSuccessStatusCode;
     }
 
     public async Task<TestsModel?> Get(string id)
     {
-        var message = new HttpRequestMessage(HttpMethod.Get, $"get/tests/{id}");
-        var tokenModel = await _localStorage.GetAsync<TokenModel>(nameof(TokenModel));
-        if (tokenModel is null)
+        var messageResult = await CreateMessage(HttpMethod.Get, $"get/tests/{id}");
+        if (!messageResult.Ok)
             return null;
-        message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel?.AccessToken);
 
-        var response = await _httpClient.SendAsync(message);
+        var response = await _httpClient.SendAsync(messageResult.Result!);
 
         if (!response.IsSuccessStatusCode)
             return null;
@@ -120,8 +96,57 @@ public class TestsService : IDisposable
         return viewModel?.ToTestModel();
     }
 
-    public void Dispose()
+    public void Dispose() => _interceptorService.Dispose();
+
+    private async Task<OperationResult<HttpRequestMessage>> CreateMessage(HttpMethod method, string url)
     {
-        _interceptorService.Dispose();
+        var result = OperationResult.CreateResult<HttpRequestMessage>();
+        var message = new HttpRequestMessage(method, url);
+        var tokenResult = await TryGetToken();
+        if (!tokenResult.Ok)
+        {
+            result.AddError(tokenResult?.Exception?.Message);
+            return result;
+        }
+        message.Headers.Authorization = CreateAuthHeader(tokenResult.Result!);
+
+        result.Result = message;
+
+        return result;
     }
+
+    private async Task<OperationResult<HttpRequestMessage>> CreateMessage<T>(HttpMethod method, string url, T value)
+    {
+        var result = OperationResult.CreateResult<HttpRequestMessage>();
+        var message = new HttpRequestMessage(method, url);
+        var tokenResult = await TryGetToken();
+        if (!tokenResult.Ok)
+        {
+            result.AddError(tokenResult?.Exception?.Message);
+            return result;
+        }
+        message.Headers.Authorization = CreateAuthHeader(tokenResult.Result!);
+        
+        message.Content = new StringContent(JsonSerializer.Serialize(value));
+        message.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+        
+        result.Result = message;
+
+        return result;
+    }
+
+    private async Task<OperationResult<TokenModel>> TryGetToken()
+    {
+        var result = OperationResult.CreateResult<TokenModel>();
+
+        result.Result = await _localStorage.GetAsync<TokenModel>(nameof(TokenModel));
+
+        if (result.Result is null)
+            result.AddError("Not token data");
+
+        return result;
+    }
+
+    private AuthenticationHeaderValue CreateAuthHeader(TokenModel token) =>
+        new AuthenticationHeaderValue("Bearer", token.AccessToken);
 }
