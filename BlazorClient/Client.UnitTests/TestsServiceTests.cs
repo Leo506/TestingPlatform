@@ -12,6 +12,7 @@ namespace Client.UnitTests;
 
 public class TestsServiceTests
 {
+    #region GetAllTests
     [Fact]
     public async Task GetAllTests_No_TokenModel_Returns_Empty()
     {
@@ -75,4 +76,61 @@ public class TestsServiceTests
         // assert
         Assert.True(actual);
     }
+    #endregion
+
+    #region CreateTest
+
+    [Fact]
+    public async Task CreateTest_No_TokenModel_Returns_False()
+    {
+        // arrange
+        var interceptorService = new Mock<IInterceptorService>();
+        var sut = new TestsService(HttpClientHelper.GetSimpleClient(), LocalStorageHelper.GetService(),
+            interceptorService.Object);
+
+        // act
+        var result = await sut.CreateTest(new TestsModel());
+
+        // assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task CreateTest_Bad_Response_Returns_False()
+    {
+        // arrange
+        var interceptorService = new Mock<IInterceptorService>();
+        var sut = new TestsService(HttpClientHelper.GetBadClient(), LocalStorageHelper.GetService(new TokenModel()
+            {
+                AccessToken = "1111"
+            }),
+            interceptorService.Object);
+
+        // act
+        var result = await sut.CreateTest(new TestsModel());
+
+        // assert
+        Assert.False(result);
+    }
+
+
+    [Fact]
+    public async Task CreateTest_All_Good_Return_True()
+    {
+        // arrange
+        var interceptorService = new Mock<IInterceptorService>();
+        var sut = new TestsService(HttpClientHelper.GetClient(""), LocalStorageHelper.GetService(new TokenModel()
+            {
+                AccessToken = "1111"
+            }),
+            interceptorService.Object);
+
+        // act
+        var result = await sut.CreateTest(new TestsModel());
+
+        // assert
+        Assert.True(result);
+    }
+
+    #endregion
 }

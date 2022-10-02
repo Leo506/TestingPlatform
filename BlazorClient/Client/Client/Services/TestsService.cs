@@ -48,6 +48,8 @@ public class TestsService : IDisposable
     {
         var message = new HttpRequestMessage(HttpMethod.Post, "create/test");
         var tokenModel = await _localStorage.GetAsync<TokenModel>(nameof(TokenModel));
+        if (tokenModel is null)
+            return false;
         message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel?.AccessToken);
 
         var viewModel = model.ToTestViewModel();
