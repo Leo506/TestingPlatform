@@ -8,6 +8,13 @@ public static class TestViewModelExtension
     {
         var questionList = new List<Question>();
 
+        if (viewModel?.QuestionTexts is null)
+            return new TestsModel()
+            {
+                Id = viewModel.Id,
+                Questions = questionList
+            };
+        
         for (var i = 0; i < viewModel.QuestionTexts.Length; i++)
         {
             var question = new Question(viewModel.QuestionTexts[i]);
@@ -19,6 +26,7 @@ public static class TestViewModelExtension
                     IsCorrect = j == viewModel.CorrectAnswersIndex[i]
                 });
             }
+
             questionList.Add(question);
         }
 
