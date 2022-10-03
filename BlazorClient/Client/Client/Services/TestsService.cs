@@ -10,16 +10,15 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Client.Services;
 
-public class TestsService : IDisposable
+public class TestsService : RemoteServiceBase, IDisposable
 {
     private readonly HttpClient _httpClient;
-    private readonly ILocalStorageService _localStorage;
     private readonly IInterceptorService _interceptorService;
-    
-    public TestsService(HttpClient httpClient, ILocalStorageService localStorage, IInterceptorService interceptorService)
+
+    public TestsService(HttpClient httpClient, ILocalStorageService localStorage,
+        IInterceptorService interceptorService) : base(localStorage)
     {
         _httpClient = httpClient;
-        _localStorage = localStorage;
         _interceptorService = interceptorService;
         _interceptorService.RegisterOnEvents();
     }
@@ -97,56 +96,4 @@ public class TestsService : IDisposable
     }
 
     public void Dispose() => _interceptorService.Dispose();
-
-    private async Task<OperationResult<HttpRequestMessage>> CreateMessage(HttpMethod method, string url)
-    {
-        var result = OperationResult.CreateResult<HttpRequestMessage>();
-        var message = new HttpRequestMessage(method, url);
-        var tokenResult = await TryGetToken();
-        if (!tokenResult.Ok)
-        {
-            result.AddError(tokenResult?.Exception?.Message);
-            return result;
-        }
-        message.Headers.Authorization = CreateAuthHeader(tokenResult.Result!);
-
-        result.Result = message;
-
-        return result;
-    }
-
-    private async Task<OperationResult<HttpRequestMessage>> CreateMessage<T>(HttpMethod method, string url, T value)
-    {
-        var result = OperationResult.CreateResult<HttpRequestMessage>();
-        var message = new HttpRequestMessage(method, url);
-        var tokenResult = await TryGetToken();
-        if (!tokenResult.Ok)
-        {
-            result.AddError(tokenResult?.Exception?.Message);
-            return result;
-        }
-        message.Headers.Authorization = CreateAuthHeader(tokenResult.Result!);
-        
-        message.Content = new StringContent(JsonSerializer.Serialize(value));
-        message.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
-        
-        result.Result = message;
-
-        return result;
-    }
-
-    private async Task<OperationResult<TokenModel>> TryGetToken()
-    {
-        var result = OperationResult.CreateResult<TokenModel>();
-
-        result.Result = await _localStorage.GetAsync<TokenModel>(nameof(TokenModel));
-
-        if (result.Result is null)
-            result.AddError("Not token data");
-
-        return result;
-    }
-
-    private AuthenticationHeaderValue CreateAuthHeader(TokenModel token) =>
-        new AuthenticationHeaderValue("Bearer", token.AccessToken);
 }
