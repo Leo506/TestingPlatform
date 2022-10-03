@@ -37,6 +37,18 @@ public class DatabaseDefinition : AppDefinition
 #endif
         });
 
+
+        services.AddDbContext<ResultsDbContext>(builder =>
+        {
+#if DEBUG
+            builder.UseInMemoryDatabase(nameof(ResultsDbContext));
+#else
+            var connString = configuration.GetConnectionString("postgres");
+            Console.WriteLine(connString);
+            builder.UseNpgsql(connString);
+#endif
+        });
+
         services.AddTransient<IMongoClient>(builder =>
             {
                 var connString = configuration.GetConnectionString("mongo");
