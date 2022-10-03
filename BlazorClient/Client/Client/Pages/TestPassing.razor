@@ -52,6 +52,7 @@ else if (Result != null)
     {
         Result = new ResultModel()
         {
+            TestId = TestsModel!.Id,
             QuestionCount = TestsModel.Questions.Count,
             CorrectAnswersCount = TestsModel.Questions.Count(question => question.IsChooseCorrectAnswer),
             ReturnUrl = "/TestPassing"

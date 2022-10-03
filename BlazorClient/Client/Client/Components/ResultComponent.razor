@@ -1,5 +1,7 @@
 ﻿@using Client.Models
+@using Client.Services
 @inject NavigationManager NavigationManager
+@inject ResultService ResultService
 
 <h4>Your result</h4>
 <p>@Result.CorrectAnswersCount / @Result.QuestionCount</p>
@@ -10,8 +12,9 @@
     [Parameter]
     public ResultModel Result { get; set; }
 
-    private void Reload()
+    private async Task Reload()
     {
+        await ResultService.SendResultAsync(Result);
         NavigationManager.NavigateTo(Result.ReturnUrl ?? "/", true);
     }
 }
