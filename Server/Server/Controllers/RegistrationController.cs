@@ -36,8 +36,11 @@ public class RegistrationController : Controller
         {
             return this.StatusCode(ServerConstants.ServerResponses.ServiceNotAvailable);
         }
-        
-        var addingRoleResult = await _userManager.AddToRoleAsync(newUser, ServerConstants.Roles.User);
+
+        var addingRoleResult = await _userManager.AddToRoleAsync(newUser,
+            viewModel.Role == ServerConstants.Roles.Teacher
+                ? ServerConstants.Roles.Teacher
+                : ServerConstants.Roles.Student);
         
         if (addingRoleResult.Succeeded) return Ok();
         

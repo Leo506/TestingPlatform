@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
+using Server.Data;
 using Server.Definitions.Database.Contexts;
 using Server.Models;
 
@@ -22,17 +23,22 @@ public class DataSeeder : IHostedService
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
         
-        var adminEmail = "admin@admin.com";
-        var password = "12345678";
-        var adminUserName = "admin";
-        var userName = "user";
-        var userEmail = "user@user.com";
+        const string adminEmail = "admin@admin.com";
+        const string adminUserName = "admin";
+        const string studentUserName = "student";
+        const string studentEmail = "user@user.com";
+        const string teacherUserName = "teacher";
+        const string teacherEmail = "teacher@teacher.com";
+        const string password = "12345678";
 
-        if (await roleManager.FindByNameAsync("Admin") == null)
-            await roleManager.CreateAsync(new ApplicationRole("Admin"));
+        if (await roleManager.FindByNameAsync(ServerConstants.Roles.Admin) == null)
+            await roleManager.CreateAsync(new ApplicationRole(ServerConstants.Roles.Admin));
         
-        if (await roleManager.FindByNameAsync("User") == null)
-            await roleManager.CreateAsync(new ApplicationRole("User"));
+        if (await roleManager.FindByNameAsync(ServerConstants.Roles.Student) == null)
+            await roleManager.CreateAsync(new ApplicationRole(ServerConstants.Roles.Student));
+
+        if (await roleManager.FindByNameAsync(ServerConstants.Roles.Teacher) == null)
+            await roleManager.CreateAsync(new ApplicationRole(ServerConstants.Roles.Teacher));
 
         if (await userManager.FindByNameAsync(adminUserName) == null)
         {
@@ -42,18 +48,29 @@ public class DataSeeder : IHostedService
                 UserName = adminUserName
             };
             await userManager.CreateAsync(user, password);
-            await userManager.AddToRoleAsync(user, "Admin");
+            await userManager.AddToRoleAsync(user, ServerConstants.Roles.Admin);
         }
         
-        if (await userManager.FindByNameAsync(userName) == null)
+        if (await userManager.FindByNameAsync(studentUserName) == null)
         {
             var user = new ApplicationUser()
             {
-                Email = userEmail,
-                UserName = userName
+                Email = studentEmail,
+                UserName = studentUserName
             };
             await userManager.CreateAsync(user, password);
-            await userManager.AddToRoleAsync(user, "User");
+            await userManager.AddToRoleAsync(user, ServerConstants.Roles.Student);
+        }
+        
+        if (await userManager.FindByNameAsync(teacherUserName) == null)
+        {
+            var user = new ApplicationUser()
+            {
+                Email = teacherEmail,
+                UserName = teacherUserName
+            };
+            await userManager.CreateAsync(user, password);
+            await userManager.AddToRoleAsync(user, ServerConstants.Roles.Teacher);
         }
     }
 

@@ -12,7 +12,7 @@ using Server.ViewModels;
 namespace Server.Controllers;
 
 [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme,
-    Roles = ServerConstants.Roles.Admin + ", " + ServerConstants.Roles.User)]
+    Roles = ServerConstants.Roles.Admin + ", " + ServerConstants.Roles.Teacher + ", " + ServerConstants.Roles.Student)]
 public class TestsManipulationController : Controller
 {
     private readonly IRepository<TestsModel> _repository;
