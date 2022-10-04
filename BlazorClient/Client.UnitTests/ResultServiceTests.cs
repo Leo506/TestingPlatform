@@ -1,6 +1,8 @@
 ﻿using Client.Models;
 using Client.Services;
+using Client.Services.Interfaces;
 using Client.UnitTests.Helpers;
+using Moq;
 
 namespace Client.UnitTests;
 
@@ -10,7 +12,8 @@ public class ResultServiceTests
     public async Task SendResultAsync_No_TokenModel_Returns_False()
     {
         // arrange
-        var sut = new ResultService(LocalStorageHelper.GetService(), HttpClientHelper.GetSimpleClient());
+        var sut = new ResultService(LocalStorageHelper.GetService(), HttpClientHelper.GetSimpleClient(),
+            new Mock<IInterceptorService>().Object);
 
         // act
         var result = await sut.SendResultAsync(new ResultModel());
@@ -26,7 +29,7 @@ public class ResultServiceTests
         var sut = new ResultService(LocalStorageHelper.GetService(new TokenModel()
         {
             AccessToken = "1111"
-        }), HttpClientHelper.GetBadClient());
+        }), HttpClientHelper.GetBadClient(), new Mock<IInterceptorService>().Object);
 
         // act
         var result = await sut.SendResultAsync(new ResultModel());
@@ -42,7 +45,7 @@ public class ResultServiceTests
         var sut = new ResultService(LocalStorageHelper.GetService(new TokenModel()
         {
             AccessToken = "1111"
-        }), HttpClientHelper.GetClient(""));
+        }), HttpClientHelper.GetClient(""), new Mock<IInterceptorService>().Object);
 
         // act
         var result = await sut.SendResultAsync(new ResultModel());

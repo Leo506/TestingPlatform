@@ -55,7 +55,8 @@ else if (Result != null)
             TestId = TestsModel!.Id,
             QuestionCount = TestsModel.Questions.Count,
             CorrectAnswersCount = TestsModel.Questions.Count(question => question.IsChooseCorrectAnswer),
-            ReturnUrl = "/TestPassing"
+            ReturnUrl = "/TestPassing",
+            IdempotencyKey = Guid.NewGuid().ToString()
         };
 
         TestsModel = null;
